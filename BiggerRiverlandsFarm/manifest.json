@@ -1,8 +1,8 @@
 ﻿{
   "Name": "Bigger Riverlands Farm",
   "Author": "Jessebot",
-  "Version": "1.0",
-  "MinimumApiVersion": "2.5",
+  "Version": "3.0",
+  "MinimumApiVersion": "2.6",
   "Description": "A bigger and better riverlands farm",
   "UniqueID": "jessebot.biggerriverlands",
   "EntryDll": "BiggerRiverlandsFarm.dll",

@@ -4,15 +4,14 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{48B39560-80F4-4ECE-BFF3-FE0C28BE9EBE}</ProjectGuid>
+    <ProjectGuid>{151AF657-2FA9-47A0-A1F2-CE19878DD726}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>BiggerRiverlandsFarm</RootNamespace>
     <AssemblyName>BiggerRiverlandsFarm</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
-    <TargetFrameworkProfile />
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
   </PropertyGroup>
@@ -49,14 +48,23 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="assets\Farm_Fishing.tbin" />
+    <None Include="assets\Farm_Fishing_NoMountain.tbin" />
+    <None Include="assets\Farm_Fishing_ProgressionMap.tbin" />
+    <None Include="assets\Farm_Fishing_ProgressionNoMountain.tbin" />
     <None Include="manifest.json" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Analyzer Include="..\packages\Pathoschild.Stardew.ModBuildConfig.2.2.0\analyzers\dotnet\cs\StardewModdingAPI.ModBuildConfig.Analyzer.dll" />
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
-    <Folder Include="assets\" />
+    <Content Include="assets\fall_pethouse.png" />
+    <Content Include="assets\ladder.png" />
+    <Content Include="assets\spring_pethouse.png" />
+    <Content Include="assets\summer_pethouse.png" />
+    <Content Include="assets\winterpethouse.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Pathoschild.Stardew.ModBuildConfig.2.2.0\build\Pathoschild.Stardew.ModBuildConfig.targets" Condition="Exists('..\packages\Pathoschild.Stardew.ModBuildConfig.2.2.0\build\Pathoschild.Stardew.ModBuildConfig.targets')" />

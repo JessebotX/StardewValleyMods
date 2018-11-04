@@ -10,6 +10,6 @@ namespace BiggerRiverlandsFarm
 {
     class ModConfig
     {
-        public bool ProgressionMap { get; set; } = true;
+        public int MapType { get; set; } = 0;
     }
 }
