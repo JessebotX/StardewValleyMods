@@ -1,0 +1,38 @@
+{
+	"Format": "1.5",
+	"Changes": [
+		
+		/* starter cabin */
+		{
+			"Action": "Load",
+			"Target": "Maps/Cabin",
+			"FromFile": "assets/Cabin.tbin",
+		},
+		
+		/* 1stcabinupgrade */
+		{
+			"Action": "Load",
+			"Target": "Maps/Cabin1",
+			"FromFile": "assets/Cabin1.tbin",
+		},
+		//1stcabinspouseroom(WIP)
+		{
+			"Action": "Load",
+			"Target": "Maps/Cabin1_marriage",
+			"FromFile": "assets/Cabin1.tbin",
+		},
+		
+		/* lastcabinupgrade */
+		{
+			"Action": "Load",
+			"Target": "Maps/Cabin2",
+			"FromFile": "assets/Cabin2.tbin",
+		},
+		//lastcabinspouseroom(WIP)
+		{
+			"Action": "Load",
+			"Target": "Maps/Cabin2_marriage",
+			"FromFile": "assets/Cabin2.tbin",
+		},
+	]
+}
