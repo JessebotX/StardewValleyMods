@@ -26,7 +26,7 @@ Adds new farming plots in farmhouse/cabins
 
 ## Install
 ###### For this stardew valley server - [Infinity Farms](https://discord.gg/6QFxJS9)
-- This should be included in the ServerPack, if not see [Installation for the general public]() 
+- This should be included in the ServerPack, if not see [Installation for the general public](https://github.com/JessebotX/StardewMods/tree/master/ContentPatcherMods/%5BCP%5D%20Farmhouse%20Plots#installation-for-the-general-public) 
 
 ###### Installation for the general public
 1. Download [SMAPI (2.8+)](https://www.nexusmods.com/stardewvalley/mods/2400)
