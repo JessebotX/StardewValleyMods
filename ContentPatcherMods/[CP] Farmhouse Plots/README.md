@@ -1,5 +1,5 @@
 # Farmhouse and Cabin Plots
-See [download source (click view raw)](https://github.com/JessebotX/StardewMods/blob/master/ContentPatcherMods/otherzipfiles/%5BCP%5D%20Farmhouse%20Plots.zip)
+See [download source (click view raw)](https://github.com/JessebotX/StardewMods/blob/master/ContentPatcherMods/%5BCP%5D%20Farmhouse%20Plots/%5BCP%5D%20Farmhouse%20Plots.zip)
 
 ## Table of Contents
 - [Info](https://github.com/JessebotX/StardewMods/tree/master/ContentPatcherMods/%5BCP%5D%20Farmhouse%20Plots#info)
