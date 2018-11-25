@@ -1,11 +1,12 @@
 {
 	"Name": "Farmhouse/Cabin Plots for server",
 	"Author": "Jessebot",
-	"Version": "1.0",
-	"Description": "Sprinkler friendly farmhouse (WIP) and cabin plots for server...",
+	"Version": "1.1",
+	"Description": "Sprinkler friendly farmhouse and cabin plots for server...",
 	"UniqueID": "Jessebot.IndoorFarmingPlots",
 	"UpdateKeys": [],
 	"ContentPackFor": {
 		"UniqueID": "Pathoschild.ContentPatcher",
 	},
 }
+
