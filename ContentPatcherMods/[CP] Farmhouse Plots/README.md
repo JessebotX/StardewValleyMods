@@ -14,12 +14,17 @@ See [download source (click view raw)](https://github.com/JessebotX/StardewMods/
 Adds new farming plots in farmhouse/cabins
 
 **Starter Houses:**
+
 - 15x15 farming plot
 - Water source
+
 **First Upgrade:**
+
 - 15x15 farming plot
 - Water source
+
 **Final Upgrade:**
+
 - 30x15 plot
 - Very small storage place for anything
 - Water source
