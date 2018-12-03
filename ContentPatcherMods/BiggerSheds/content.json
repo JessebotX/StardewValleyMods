@@ -3,6 +3,7 @@
   "ConfigSchema": {
         "Shed": {
             "AllowValues": "default, stone, wood, beach, bluewood, joja, ocean, space"	
+			"Default": "stone",
         },
     },
   "Changes": [
