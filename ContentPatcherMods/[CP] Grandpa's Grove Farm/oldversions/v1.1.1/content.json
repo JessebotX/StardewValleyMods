@@ -1,10 +1,13 @@
 {
-    "Format": "1.6",
+    "Format": "1.4",
     "Changes": [
 		{
 			"Action": "Load",
             "Target": "Maps/Farm_Foraging",
             "FromFile": "assets/Farm_Foraging.tbin", 
+			"When": {
+				"FarmType": "Forest",
+			},
         },
 		{
 			"Action": "Load",

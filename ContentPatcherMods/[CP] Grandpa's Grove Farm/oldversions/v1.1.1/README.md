@@ -18,6 +18,7 @@ get an easier access to the Secret Woods (bottom left of map - copper axe) and m
   - **NOTE:** You should get the latest stable versions
 - Should work in both Singleplayer and Multiplayer
   - For multiplayer, everyone should have the mod installed, people who don't have the mod will see you walking out of bounds
+
 **KNOWN ISSUES**
 - **MOD CONFLICTS**
     - Any mod that patches the ```Farm_Foraging.tbin```, ```Forest.xnb``` and ```Woods.xnb```
@@ -29,5 +30,5 @@ get an easier access to the Secret Woods (bottom left of map - copper axe) and m
 See [Player's Guide to Modding](https://stardewvalleywiki.com/Modding:Player_Guide/Getting_Started) for more info
 
 ## See Also
-- [Release Notes]()
+- [Release Notes](https://github.com/JessebotX/StardewMods/blob/master/ContentPatcherMods/%5BCP%5D%20Grandpa's%20Grove%20Farm/changelog.md)
 - [Source Code](https://github.com/JessebotX/StardewMods/tree/master/ContentPatcherMods/%5BCP%5D%20Grandpa's%20Grove%20Farm)
