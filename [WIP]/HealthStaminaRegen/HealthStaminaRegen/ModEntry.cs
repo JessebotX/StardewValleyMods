@@ -26,6 +26,9 @@ namespace HealthStaminaRegen
         }
 
         private void oneSecond(object sender, EventArgs args)
+        {
+
+        }
 
         private void GameEvents_UpdateTick(object sender, EventArgs e)
         {
