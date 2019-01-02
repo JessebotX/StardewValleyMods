@@ -2,7 +2,7 @@
 	"LoaderVersion": "1.2",
 	"Teleporters": [
 		{
-			"Name": "WinterWoodsService",
+			"ListName": "WinterWoodsService",
 			"Destinations": [
 				{
 					"MapName": "Woods",

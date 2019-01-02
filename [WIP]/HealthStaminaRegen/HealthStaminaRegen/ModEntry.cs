@@ -15,6 +15,9 @@ namespace HealthStaminaRegen
     {
         private ModConfig Config;
 
+        private int secondsUntilHealthRegen = 3;
+        private int secondsUntilStaminaRegen = 3;
+
         public override void Entry(IModHelper helper)
         {
             helper.Events.GameLoop.OneSecondUpdateTicked += this.oneSecond;
@@ -27,22 +30,30 @@ namespace HealthStaminaRegen
         {
             var player = Game1.player;
 
-            var healthRegenRate = this.Config.HealthRegenRate;
-            var staminaRegenRate = this.Config.StaminaRegenRate;
-
-            if (!Context.IsWorldReady || !Context.IsPlayerFree)
+            if (secondsUntilHealthRegen == 0)
             {
-                return;
+                if (!Context.IsWorldReady || !Context.IsPlayerFree)
+                {
+                    return;
+                }
+
+                if (player.health < player.maxHealth)
+                {
+                    player.health = Math.Min(player.maxHealth, player.health + this.Config.HealthRegenRate);
+                }
             }
 
-            if (player.health < player.maxHealth)
+            if (secondsUntilStaminaRegen == 0)
             {
-                player.health = Math.Min(player.maxHealth, player.health + healthRegenRate);
-            }
+                if (!Context.IsWorldReady || !Context.IsPlayerFree)
+                {
+                    return;
+                }
 
-            if (player.Stamina < player.MaxStamina)
-            {
-                player.Stamina = Math.Min(player.MaxStamina, player.Stamina + staminaRegenRate);
+                if (player.Stamina < player.MaxStamina)
+                {
+                    player.Stamina = Math.Min(player.MaxStamina, player.Stamina + this.Config.StaminaRegenRate);
+                }
             }
         } 
     }

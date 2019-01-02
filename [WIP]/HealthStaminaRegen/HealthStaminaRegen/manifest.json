@@ -5,6 +5,6 @@
   	"Description": "Health and Stamina will regenerate overtime",
   	"UniqueID": "Jessebot.HealthStaminaRegen",
   	"MinimumApiVersion": "2.10",
-  	"EntryDLL": "HealthStaminaRegen.DLL",
+  	"EntryDLL": "HealthStaminaRegen.dll",
   	"UpdateKeys": [],
 }
