@@ -15,7 +15,6 @@ namespace HealthStaminaRegen
     {
         private ModConfig Config;
 
-        /* When you lose health/used stamina, it takes this many seconds until you start to regen */
         private int secondsUntilHealthRegen = 0;
         private int secondsUntilStaminaRegen = 0;
 
@@ -48,7 +47,7 @@ namespace HealthStaminaRegen
             // if player took damage
             if (player.health < this.lastHealth)
             {
-                secondsUntilHealthRegen = 3;
+                secondsUntilHealthRegen = this.Config.SecondsUntilHealthRegen;
             }
             //timer
             else if (secondsUntilHealthRegen > 0)
@@ -70,7 +69,7 @@ namespace HealthStaminaRegen
             // if player used stamina
             if (player.Stamina < this.lastStamina)
             {
-                secondsUntilStaminaRegen = 1;
+                secondsUntilStaminaRegen = this.Config.SecondsUntilStaminaRegen;
             }
             //timer
             else if (secondsUntilStaminaRegen > 0)
