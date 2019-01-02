@@ -45,7 +45,6 @@ namespace HealthStaminaRegen
             /****************
              **Health Regen**
              ****************/
-             
             // if player took damage
             if (player.health < this.lastHealth)
             {
@@ -57,7 +56,7 @@ namespace HealthStaminaRegen
                 secondsUntilHealthRegen--;
             }
             //regen
-            else if (secondsUntilHealthRegen == 0)
+            else if (secondsUntilHealthRegen <= 0)
             {
                 if (player.health < player.maxHealth)
                 {
@@ -65,13 +64,13 @@ namespace HealthStaminaRegen
                 }
             }
 
-            /*****************
-             **Stamina Regen**
-             *****************/
+            /***************
+             *Stamina Regen*
+             ***************/
             // if player used stamina
             if (player.Stamina < this.lastStamina)
             {
-                secondsUntilStaminaRegen = 3;
+                secondsUntilStaminaRegen = 1;
             }
             //timer
             else if (secondsUntilStaminaRegen > 0)
@@ -79,7 +78,7 @@ namespace HealthStaminaRegen
                 secondsUntilStaminaRegen--;
             }
             // regen
-            else if (secondsUntilStaminaRegen == 0)
+            else if (secondsUntilStaminaRegen <= 0)
             {
                 if (player.Stamina < player.MaxStamina)
                 {
