@@ -15,28 +15,31 @@ namespace HealthStaminaRegen
     {
         private ModConfig Config;
 
+        /* When you lose health/used stamina, it takes this many seconds until you start to regen */
         private int secondsUntilHealthRegen = 3;
-        private int secondsUntilStaminaRegen = 3;
+        private int secondsUntilStaminaRegen = 2;
 
         public override void Entry(IModHelper helper)
         {
             helper.Events.GameLoop.OneSecondUpdateTicked += this.oneSecond;
 
-            /* Config */
+            /* Read Config */
             this.Config = helper.ReadConfig<ModConfig>();
         }
 
         private void oneSecond(object sender, EventArgs e)
         {
+            /* Variables */
             var player = Game1.player;
 
+            if (!Context.IsWorldReady || !Context.IsPlayerFree)
+            {
+                 return;
+            }
+
+            /* Health Regen */ 
             if (secondsUntilHealthRegen == 0)
             {
-                if (!Context.IsWorldReady || !Context.IsPlayerFree)
-                {
-                    return;
-                }
-
                 if (player.health < player.maxHealth)
                 {
                     player.health = Math.Min(player.maxHealth, player.health + this.Config.HealthRegenRate);
@@ -45,11 +48,6 @@ namespace HealthStaminaRegen
 
             if (secondsUntilStaminaRegen == 0)
             {
-                if (!Context.IsWorldReady || !Context.IsPlayerFree)
-                {
-                    return;
-                }
-
                 if (player.Stamina < player.MaxStamina)
                 {
                     player.Stamina = Math.Min(player.MaxStamina, player.Stamina + this.Config.StaminaRegenRate);
