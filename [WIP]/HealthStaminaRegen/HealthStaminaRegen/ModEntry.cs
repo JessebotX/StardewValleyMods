@@ -27,6 +27,11 @@ namespace HealthStaminaRegen
             this.Config = helper.ReadConfig<ModConfig>();
         }
 
+        private void Timer (int secondsUntilHealthRegen)
+        {
+
+        }
+
         private void oneSecond(object sender, EventArgs e)
         {
             /* Variables */
