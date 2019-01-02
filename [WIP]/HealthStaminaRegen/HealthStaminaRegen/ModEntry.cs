@@ -32,13 +32,13 @@ namespace HealthStaminaRegen
             /* Variables */
             var player = Game1.player;
 
-            if (!Context.IsWorldReady || !Context.IsPlayerFree)
+            if (!Context.IsWorldReady || !Context.IsPlayerFree || !Game1.paused)
             {
                  return;
             }
 
             /* Health Regen */ 
-            if (secondsUntilHealthRegen == 0)
+            if (this.secondsUntilHealthRegen == 0)
             {
                 if (player.health < player.maxHealth)
                 {
@@ -46,8 +46,9 @@ namespace HealthStaminaRegen
                 }
             }
 
-            if (secondsUntilStaminaRegen == 0)
+            if (this.secondsUntilStaminaRegen == 0)
             {
+                /* Stamina Regen */
                 if (player.Stamina < player.MaxStamina)
                 {
                     player.Stamina = Math.Min(player.MaxStamina, player.Stamina + this.Config.StaminaRegenRate);
