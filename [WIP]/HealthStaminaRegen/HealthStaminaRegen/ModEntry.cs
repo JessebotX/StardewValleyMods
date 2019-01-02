@@ -21,16 +21,11 @@ namespace HealthStaminaRegen
 
         public override void Entry(IModHelper helper)
         {
-            GameEvents.OneSecondTick += oneSecond;
+            GameLoop.OneSecondUpdateTick += oneSecond;
             this.Config = helper.ReadConfig<ModConfig>();
         }
 
-        private void oneSecond(object sender, EventArgs args)
-        {
-
-        }
-
-        private void GameEvents_UpdateTick(object sender, EventArgs e)
+        private void oneSecond(object sender, EventArgs e)
         {
             var player = Game1.player;
 
