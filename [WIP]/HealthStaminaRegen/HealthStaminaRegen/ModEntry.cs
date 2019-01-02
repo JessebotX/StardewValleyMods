@@ -16,8 +16,11 @@ namespace HealthStaminaRegen
         private ModConfig Config;
 
         /* When you lose health/used stamina, it takes this many seconds until you start to regen */
-        private int secondsUntilHealthRegen = 3;
-        private int secondsUntilStaminaRegen = 2;
+        private int secondsUntilHealthRegen = 0;
+        private int secondsUntilStaminaRegen = 0;
+
+        private int lastHealth;
+        private int lastStamina;
 
         public override void Entry(IModHelper helper)
         {
@@ -27,23 +30,34 @@ namespace HealthStaminaRegen
             this.Config = helper.ReadConfig<ModConfig>();
         }
 
-        private void Timer (int secondsUntilHealthRegen)
-        {
-
-        }
-
         private void oneSecond(object sender, EventArgs e)
         {
             /* Variables */
             var player = Game1.player;
+            var secondsUntilHealthRegen = this.secondsUntilHealthRegen;
+            var secondsUntilStaminaRegen = this.secondsUntilStaminaRegen;
 
-            if (!Context.IsWorldReady || !Context.IsPlayerFree || !Game1.paused)
+            if (!Context.IsPlayerFree || !Game1.paused)
             {
                  return;
             }
 
-            /* Health Regen */ 
-            if (this.secondsUntilHealthRegen == 0)
+            /****************
+             **Health Regen**
+             ****************/
+             
+            // if player took damage
+            if (player.health < this.lastHealth)
+            {
+                secondsUntilHealthRegen = 3;
+            }
+            //timer
+            else if (secondsUntilHealthRegen > 0)
+            {
+                secondsUntilHealthRegen--;
+            }
+            //regen
+            else if (secondsUntilHealthRegen == 0)
             {
                 if (player.health < player.maxHealth)
                 {
@@ -51,14 +65,30 @@ namespace HealthStaminaRegen
                 }
             }
 
-            if (this.secondsUntilStaminaRegen == 0)
+            /*****************
+             **Stamina Regen**
+             *****************/
+            // if player used stamina
+            if (player.Stamina < this.lastStamina)
             {
-                /* Stamina Regen */
+                secondsUntilStaminaRegen = 3;
+            }
+            //timer
+            else if (secondsUntilStaminaRegen > 0)
+            {
+                secondsUntilStaminaRegen--;
+            }
+            // regen
+            else if (secondsUntilStaminaRegen == 0)
+            {
                 if (player.Stamina < player.MaxStamina)
                 {
                     player.Stamina = Math.Min(player.MaxStamina, player.Stamina + this.Config.StaminaRegenRate);
                 }
             }
+
+            player.health = this.lastHealth;
+            player.Stamina = this.lastStamina;
         } 
     }
 }
