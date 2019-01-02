@@ -15,13 +15,11 @@ namespace HealthStaminaRegen
     {
         private ModConfig Config;
 
-        private int IncrementHealth;
-
-        private int IncrementStamina;
-
         public override void Entry(IModHelper helper)
         {
             helper.Events.GameLoop.OneSecondUpdateTicked += this.oneSecond;
+
+            /* Config */
             this.Config = helper.ReadConfig<ModConfig>();
         }
 
@@ -29,14 +27,22 @@ namespace HealthStaminaRegen
         {
             var player = Game1.player;
 
-            if (player.health + IncrementHealth > Game1.player.maxHealth)
-            {
+            var healthRegenRate = this.Config.HealthRegenRate;
+            var staminaRegenRate = this.Config.StaminaRegenRate;
 
+            if (!Context.IsWorldReady || !Context.IsPlayerFree)
+            {
+                return;
             }
 
-            if (player.stamina + IncrementStamina > Game1.player.MaxStamina)
+            if (player.health < player.maxHealth)
             {
+                player.health = Math.Min(player.maxHealth, player.health + healthRegenRate);
+            }
 
+            if (player.Stamina < player.MaxStamina)
+            {
+                player.Stamina = Math.Min(player.MaxStamina, player.Stamina + staminaRegenRate);
             }
         } 
     }
