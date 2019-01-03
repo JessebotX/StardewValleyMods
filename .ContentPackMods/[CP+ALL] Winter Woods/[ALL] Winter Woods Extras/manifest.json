@@ -5,7 +5,7 @@
 	"Description": "Winter Woods Extras adds the shops and teleporter menu",
 	"UniqueID": "Jessebot.WinterWoodsExtras",
 	"MinimumApiVersion": "2.9",
-	"UpdateKeys": [],
+	"UpdateKeys": ["Nexus:3211"],
 	"ContentPackFor": {
 		"UniqueID": "Entoarox.AdvancedLocationLoader",
 	},

@@ -3,14 +3,9 @@
 	"Portrait": "assets/snowdwarf.png",
 	"Owner": "Snow Dwarf",
 	"Messages": [
-		"Have you met my friend at the mines, I can speak the fluent human language, Selling minerals at base value",
+		"Hi",
 	],
 	"Items": [
-		{
-			"Id": 21,
-			"BigCraftable": true,
-			"Price": 300,
-		},
 		{
 			"Id": 60,
 			"BigCraftable": false,

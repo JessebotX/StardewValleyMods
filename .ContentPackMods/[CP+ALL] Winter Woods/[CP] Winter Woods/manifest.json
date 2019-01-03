@@ -4,7 +4,7 @@
 	"Author": "Jessebot",
 	"Description": "A secret woods expansion mod.",
 	"MinimumApiVersion": "2.9",
-	"UpdateKeys": [],
+	"UpdateKeys": ["Nexus:3211"],
 	"UniqueID": "Jessebot.WinterWoods",
 	"ContentPackFor": {
 		"UniqueID": "Pathoschild.ContentPatcher",
