@@ -1,4 +1,4 @@
-# Summit Farm
+# Health Stamina Regen
 [(source)](https://www.nexusmods.com/stardewvalley/mods/3207)
 
 Health and stamina regenerates overtime. Optional configurable regen rate version.
@@ -17,7 +17,7 @@ Health and stamina regenerates overtime. Optional configurable regen rate versio
 ## Install
 _**Installation**_
 1. Download [SMAPI (2.7 or later)](https://www.nexusmods.com/stardewvalley/mods/2400)
-3. Extract/Unzip this mod into your ```Stardew Valley/Mods``` folder
+2. Extract/Unzip this mod into your ```Stardew Valley/Mods``` folder
 
 _**Uninstallation**_
 - Move this mod out of the **Stardew Valley/Mods** folder
