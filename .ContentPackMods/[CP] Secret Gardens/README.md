@@ -33,6 +33,6 @@ See [config.json Configuration Documentation](https://www.nexusmods.com/stardewv
 
 ## See Also
 - [My other mods](https://www.nexusmods.com/users/55529772?tab=user+files)
-- [Release Notes](https://github.com/JessebotX/StardewMods/blob/master/.ContentPackMods/%5BCP%5D%20Secret%20Gardens/changelog.md)
+- [Release Notes](changelog.md)
 
 

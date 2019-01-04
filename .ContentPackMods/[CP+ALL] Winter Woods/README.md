@@ -32,4 +32,4 @@ See [Player's Guide to Downloading and Using Mods](https://stardewvalleywiki.com
 
 ## See Also
 - [My other mods](https://www.nexusmods.com/users/55529772?tab=user+files)
-- [Release Notes]()
+- [Release Notes](changelog.md)
