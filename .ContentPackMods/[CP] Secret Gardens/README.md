@@ -9,7 +9,7 @@ A new greenhouse that makes it look like a garden. Still functions the same way 
 - (4) 3x3 farm plots, (1) 15x15 farm plot and 12 tree spots
 - A relaxing area with a computer that displays your farmer stats and a radio that lets you change the current music playing
 - A cave area for storage or other stuff
-- [ ]```[FUTURE RELEASE]```: A swimming lake
+- A swimming lake
 
 ## Compatibility
 - Tested with Stardew Valley 1.3.28, SMAPI 2.7 and Content Patcher 1.4 (should work with anything higher)
@@ -33,6 +33,6 @@ See [config.json Configuration Documentation](https://www.nexusmods.com/stardewv
 
 ## See Also
 - [My other mods](https://www.nexusmods.com/users/55529772?tab=user+files)
-- [Release Notes](https://github.com/JessebotX/StardewMods/blob/master/ContentPatcherMods/%5BCP%5D%20Secret%20Gardens/changelog.md)
+- [Release Notes](https://github.com/JessebotX/StardewMods/blob/master/.ContentPackMods/%5BCP%5D%20Secret%20Gardens/changelog.md)
 
 

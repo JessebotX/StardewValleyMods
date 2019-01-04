@@ -29,5 +29,5 @@ get an easier access to the Secret Woods (bottom left of map - copper axe) and m
 See [Player's Guide to Modding](https://stardewvalleywiki.com/Modding:Player_Guide/Getting_Started) for more info
 
 ## See Also
-- [Release Notes]()
-- [Source Code](https://github.com/JessebotX/StardewMods/tree/master/ContentPatcherMods/%5BCP%5D%20Grandpa's%20Grove%20Farm)
+- [My other mods](https://www.nexusmods.com/users/55529772?tab=user+files)
+- [Release Notes](changelog.md)

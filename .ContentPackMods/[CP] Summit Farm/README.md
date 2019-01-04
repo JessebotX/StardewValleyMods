@@ -33,9 +33,4 @@ _**Uninstallation**_
 
 ## See Also
 - [My other mods](https://www.nexusmods.com/users/55529772?tab=user+files)
-- [Release Notes](https://github.com/JessebotX/StardewMods/blob/master/ContentPatcherMods/Summit%20Farm/Changelog.md)
-
-##### TODO
-- [ ] Put map as part of my Map Collection
-
-﻿
+- [Release Notes](Changelog.md)

@@ -1,11 +1,5 @@
 # Bigger Sheds
-[(Nexus download source)](https://www.nexusmods.com/stardewvalley/mods/2816)
-
-## Contents
-- [Features](https://github.com/JessebotX/StardewMods/tree/master/ContentPatcherMods/BiggerSheds#features)
-- [Compatibility](https://github.com/JessebotX/StardewMods/tree/master/ContentPatcherMods/BiggerSheds#compatibility)
-- [Install](https://github.com/JessebotX/StardewMods/tree/master/ContentPatcherMods/BiggerSheds#install)
-- [See Also](https://github.com/JessebotX/StardewMods/tree/master/ContentPatcherMods/BiggerSheds#see-also)
+[(source)](https://www.nexusmods.com/stardewvalley/mods/2816)
 
 ## Features
 Expansion of the interior of the shed. Comes with 8 different versions with wallpaper and flooring and configurable through config.json 
@@ -29,5 +23,5 @@ Expansion of the interior of the shed. Comes with 8 different versions with wall
 See [Player's Guide to Modding](https://stardewvalleywiki.com/Modding:Player_Guide/Getting_Started) for more info
 
 ## See Also
-- [Release Notes](https://github.com/JessebotX/StardewMods/blob/master/ContentPatcherMods/BiggerSheds/changelog.md)
-- [Source Code](https://github.com/JessebotX/StardewMods/tree/master/ContentPatcherMods/BiggerSheds)
+- [My Other Mods](https://www.nexusmods.com/users/55529772?tab=user+files)
+- [Release Notes](https://github.com/JessebotX/StardewMods/blob/master/.ContentPackMods/%5BCP%5D%20BiggerSheds/changelog.md)
