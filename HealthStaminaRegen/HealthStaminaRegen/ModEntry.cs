@@ -33,8 +33,6 @@ namespace HealthStaminaRegen
         {
             /* Variables */
             var player = Game1.player;
-            var secondsUntilHealthRegen = this.secondsUntilHealthRegen;
-            var secondsUntilStaminaRegen = this.secondsUntilStaminaRegen;
 
             if (!Context.IsPlayerFree || !Game1.paused)
             {
@@ -47,15 +45,15 @@ namespace HealthStaminaRegen
             // if player took damage
             if (player.health < this.lastHealth)
             {
-                secondsUntilHealthRegen = this.Config.SecondsUntilHealthRegen;
+                this.secondsUntilHealthRegen = this.Config.SecondsUntilHealthRegen;
             }
             //timer
-            else if (secondsUntilHealthRegen > 0)
+            else if (this.secondsUntilHealthRegen > 0)
             {
-                secondsUntilHealthRegen--;
+                this.secondsUntilHealthRegen--;
             }
             //regen
-            else if (secondsUntilHealthRegen <= 0)
+            else if (this.secondsUntilHealthRegen <= 0)
             {
                 if (player.health < player.maxHealth)
                 {
@@ -69,15 +67,15 @@ namespace HealthStaminaRegen
             // if player used stamina
             if (player.Stamina < this.lastStamina)
             {
-                secondsUntilStaminaRegen = this.Config.SecondsUntilStaminaRegen;
+                this.secondsUntilStaminaRegen = this.Config.SecondsUntilStaminaRegen;
             }
             //timer
-            else if (secondsUntilStaminaRegen > 0)
+            else if (this.secondsUntilStaminaRegen > 0)
             {
-                secondsUntilStaminaRegen--;
+               this.secondsUntilStaminaRegen--;
             }
             // regen
-            else if (secondsUntilStaminaRegen <= 0)
+            else if (this.secondsUntilStaminaRegen <= 0)
             {
                 if (player.Stamina < player.MaxStamina)
                 {
