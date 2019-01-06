@@ -41,7 +41,22 @@ namespace AllFishAllSeasons
                 foreach (int fishID in data.Keys)
                 {
                     string[] fields = data[fishID].Split('/');
-                    //continue (todo)
+                    fields[5] = "600 200";
+                    data[fishID] = string.Join("/", fields);
+                }
+            }
+
+            if (asset.AssetNameEquals("Data/Locations"))
+            {
+                IDictionary<int, string> data = asset.AsDictionary<int, string>().Data;
+                foreach (int locationsID in data.Keys)
+                {
+                    string[] fields = data[locationsID].Split('/');
+                    fields[4] = "//todo";
+                    fields[5] = "//todo";
+                    fields[6] = "//todo";
+                    fields[7] = "//todo";
+                    data[locationsID] = string.Join("/", fields);
                 }
             }
         }
