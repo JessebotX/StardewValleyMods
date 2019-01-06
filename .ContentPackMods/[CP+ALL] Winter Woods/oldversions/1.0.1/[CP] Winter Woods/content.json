@@ -7,8 +7,15 @@
 			"Action": "Load",
 			"Target": "Maps/Woods",
 			"FromFile": "assets/Woods.tbin",
+		},
+		{
+			"LogName": "Winter in Winter Woods",
+			"Action": "Load",
+			"Target": "Maps/Woods",
+			"FromFile": "assets/WinterWoods.tbin",
 			"When": {
-				"Season": "Spring, Summer, Fall"
+				"HasMod:Jessebot.WinterWoodsExtras": "false",
+				"Season": "Winter",
 			}
 		},
 		{
@@ -17,7 +24,8 @@
 			"Target": "Maps/Woods",
 			"FromFile": "assets/ALLWinterWoods.tbin",
 			"When": {
-				"Season": "Winter"
+				"HasMod:Jessebot.WinterWoodsExtras": "true",
+				"Season": "Winter",
 			}
 		},
 	],
