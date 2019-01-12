@@ -18,11 +18,16 @@ namespace Sprint
          ***Fields***
          ************/
         private ModConfig Config;
+        /* sprint activated bool */
         private bool sprintActivated = false;
+        /* Realistic Sprint Speed */
+        private float secondsUntilIncreaseSpeed = 0;
+
+        private float secondsUntilSprintBuffIncrementStops = 0;
 
         public override void Entry (IModHelper helper)
         {
-            /* Event Handler */
+            /* Event Handlers */
             helper.Events.Input.ButtonPressed += this.OnButtonPressed;
             helper.Events.GameLoop.OneSecondUpdateTicked += this.OneSecond;
 
@@ -60,7 +65,7 @@ namespace Sprint
 
         private void OneSecond (object sender, OneSecondUpdateTickedEventArgs e)
         {
-            if (!Context.IsPlayerFree || !Game1.player.isMoving())
+            if (!Context.IsPlayerFree)
             {
                 return;
             }
@@ -70,7 +75,38 @@ namespace Sprint
                 // called if Sprint Key/Button is pressed
                 if (sprintActivated == true)
                 {
-                    // todo
+                    secondsUntilIncreaseSpeed = 3;
+                    if (secondsUntilIncreaseSpeed > 0)
+                    {
+                        secondsUntilIncreaseSpeed--;
+
+                        //if player stops moving
+                        if (!Game1.player.isMoving())
+                        {
+                            secondsUntilSprintBuffIncrementStops = 2;
+                            if (secondsUntilSprintBuffIncrementStops > 0)
+                            {
+                                secondsUntilSprintBuffIncrementStops--;
+                            }
+                            // todo
+                        }
+                        //beginning
+                        if (secondsUntilIncreaseSpeed == 3)
+                        {
+                            Game1.player.addedSpeed = 1;
+                        }
+                        // 1 second in
+                        if (secondsUntilIncreaseSpeed == 2)
+                        {
+                            Game1.player.addedSpeed = 2;
+                        }
+                        // 2+ seconds in
+                        if (secondsUntilIncreaseSpeed <= 3)
+                        {
+                            Game1.player.addedSpeed = 3;
+                        }
+
+                    }
                 }
             }
         }
