@@ -14,12 +14,17 @@ namespace Sprint
 {
     class ModEntry : Mod
     {
+        /************
+         ***Fields***
+         ************/
         private ModConfig Config;
+        private bool sprintActivated = false;
 
         public override void Entry (IModHelper helper)
         {
             /* Event Handler */
             helper.Events.Input.ButtonPressed += this.OnButtonPressed;
+            helper.Events.GameLoop.OneSecondUpdateTicked += this.OneSecond;
 
             /* Read Config */
             this.Config = helper.ReadConfig<ModConfig>();
@@ -48,7 +53,24 @@ namespace Sprint
 
                 if (isPrimarySprintKeyPressed || isSecondarySprintKeyPressed || isControllerSprintButtonPressed)
                 {
-                    Game1.player.addedSpeed = 3;
+                    sprintActivated = true;
+                }
+            }
+        }
+
+        private void OneSecond (object sender, OneSecondUpdateTickedEventArgs e)
+        {
+            if (!Context.IsPlayerFree || !Game1.player.isMoving())
+            {
+                return;
+            }
+
+            else
+            {
+                // called if Sprint Key/Button is pressed
+                if (sprintActivated == true)
+                {
+                    // todo
                 }
             }
         }
