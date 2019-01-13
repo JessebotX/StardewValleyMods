@@ -65,11 +65,13 @@ namespace Sprint
 
         private void OneSecond (object sender, OneSecondUpdateTickedEventArgs e)
         {
+            /* Do nothing if player isn't free */
             if (!Context.IsPlayerFree)
             {
                 return;
             }
 
+            //else
             else
             {
                 // called if Sprint Key/Button is pressed
