@@ -83,29 +83,33 @@ namespace Sprint
                         //if player stops moving
                         if (!Game1.player.isMoving())
                         {
+                            // 2 seconds until sprint speed increment wears off
                             secondsUntilSprintBuffIncrementStops = 2;
                             if (secondsUntilSprintBuffIncrementStops > 0)
                             {
                                 secondsUntilSprintBuffIncrementStops--;
                             }
+                            if (secondsUntilSprintBuffIncrementStops <= 0)
+                            {
+                                sprintActivated = false;
+                            }
                             // todo
                         }
                         //beginning
-                        if (secondsUntilIncreaseSpeed == 3)
+                        if (secondsUntilIncreaseSpeed == 3 && Game1.player.isMoving())
                         {
                             Game1.player.addedSpeed = 1;
                         }
                         // 1 second in
-                        if (secondsUntilIncreaseSpeed == 2)
+                        if (secondsUntilIncreaseSpeed == 2 && Game1.player.isMoving())
                         {
                             Game1.player.addedSpeed = 2;
                         }
                         // 2+ seconds in
-                        if (secondsUntilIncreaseSpeed <= 3)
+                        if (secondsUntilIncreaseSpeed <= 3 && Game1.player.isMoving())
                         {
                             Game1.player.addedSpeed = 3;
                         }
-
                     }
                 }
             }
