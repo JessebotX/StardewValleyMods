@@ -67,8 +67,7 @@ namespace Sprint
             if (sprintActivated == true)
             {
                 Buff buff = new Buff(0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, null, null, null);
-                buff.millisecondsDuration = 
-                    //todo
+                buff.millisecondsDuration = 5000;
             }
         }
     }
