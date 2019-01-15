@@ -56,17 +56,18 @@ namespace Sprint
                 bool isSecondarySprintKeyPressed = this.Helper.Input.IsDown(this.Config.SecondarySprintKey);
                 bool isControllerSprintButtonPressed = this.Helper.Input.IsDown(this.Config.ControllerSprintButton);
 
-                if (isPrimarySprintKeyPressed || isSecondarySprintKeyPressed || isControllerSprintButtonPressed)
+                if (isPrimarySprintKeyPressed || isSecondarySprintKeyPressed || isControllerSprintButtonPressed && Game1.player.isMoving())
                 {
                     sprintActivated = true;
                 }
             }
         }
+        
         private void UpdateTicked(object sender, UpdateTickedEventArgs e)
         {
             if (sprintActivated == true)
             {
-                Buff buff = new Buff(0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, null, null, null);
+                Buff buff = new Buff(0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, "Sprint Speed", "le Sprint Speed");
                 buff.millisecondsDuration = 5000;
             }
         }
