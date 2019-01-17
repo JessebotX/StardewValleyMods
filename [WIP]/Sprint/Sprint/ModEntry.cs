@@ -18,12 +18,14 @@ namespace Sprint
          ***Fields***
          ************/
         private ModConfig Config;
-        /* sprint activated bool */
+        //sprint/walk activated bool
         private bool playerSprinting = false;
-        /* Realistic Sprint Speed Timer*/
-        private int secondsUntilIncreaseSpeed = 0;
+        private bool playerWalking = false;
+        //Realistic Sprint Speed Timer
+        private int secondsUntilIncreaseSpeed = 5;
         //speed
         private int sprintSpeed;
+        private int walkSpeed;
 
         public override void Entry(IModHelper helper)
         {
@@ -46,21 +48,25 @@ namespace Sprint
             else
             {
                 //suppress game keybinds depending on config values
-                this.Helper.Input.Suppress(this.Config.PrimarySprintKey);
-                this.Helper.Input.Suppress(this.Config.SecondarySprintKey);
+                this.Helper.Input.Suppress(this.Config.SprintKey);
                 this.Helper.Input.Suppress(this.Config.ControllerSprintButton);
                 this.Helper.Input.Suppress(this.Config.SlowDownKey);
 
-                // is the key/button being pressed
-                bool isPrimarySprintKeyPressed = this.Helper.Input.IsDown(this.Config.PrimarySprintKey);
-                bool isSecondarySprintKeyPressed = this.Helper.Input.IsDown(this.Config.SecondarySprintKey);
+                //is the key/button being pressed
+                bool isSprintKeyPressed = this.Helper.Input.IsDown(this.Config.SprintKey);
                 bool isControllerSprintButtonPressed = this.Helper.Input.IsDown(this.Config.ControllerSprintButton);
+                bool isWalkKeyPressed = this.Helper.Input.IsDown(this.Config.SlowDownKey);
 
-                if (isPrimarySprintKeyPressed || isSecondarySprintKeyPressed || isControllerSprintButtonPressed && Game1.player.isMoving())
+                if (isSprintKeyPressed || isControllerSprintButtonPressed && Game1.player.isMoving())
                 {
                     playerSprinting = true;
                     secondsUntilIncreaseSpeed = 5;
-                    Game1.player.addedSpeed += this.sprintSpeed;
+                    Game1.player.Speed += this.sprintSpeed;
+                }
+
+                else if (isWalkKeyPressed && Game1.player.isMoving())
+                {
+                    Game1.player.canOnlyWalk = true;
                 }
             }
         }
@@ -72,26 +78,30 @@ namespace Sprint
                 return;
             }
 
-            if (playerSprinting == true)
+            /*************
+             **Sprinting**
+             *************/
+            if (playerSprinting == true && playerWalking == false)
             {
                 if (secondsUntilIncreaseSpeed > 0)
                 {
                     secondsUntilIncreaseSpeed--;
-                }
-
-                if (secondsUntilIncreaseSpeed <= 5)
-                {
-                    sprintSpeed = 1;
-                }
-                else if (secondsUntilIncreaseSpeed <= 3)
-                {
-                    sprintSpeed = 2;
-                }
-                else if (secondsUntilIncreaseSpeed <= 0)
-                {
-                    sprintSpeed = 3;
+                    if (secondsUntilIncreaseSpeed <= 4)
+                    {
+                        sprintSpeed += 2;
+                    }
+                    else if (secondsUntilIncreaseSpeed <= 2)
+                    {
+                        sprintSpeed += 4;
+                    }
+                    else if (secondsUntilIncreaseSpeed <= 0)
+                    {
+                        sprintSpeed += 5;
+                    }
                 }
             }
+            
+            /* Walking is stored at the OnButtonPressed method */
         }
     }
 }
