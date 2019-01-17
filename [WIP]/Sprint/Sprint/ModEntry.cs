@@ -18,14 +18,10 @@ namespace Sprint
          ***Fields***
          ************/
         private ModConfig Config;
-        //sprint/walk activated bool
+
         private bool playerSprinting = false;
-        private bool playerWalking = false;
-        //Realistic Sprint Speed Timer
-        private int secondsUntilIncreaseSpeed = 5;
-        //speed
-        private int sprintSpeed;
-        private int walkSpeed;
+
+        private int addedSprintSpeed = 0;
 
         public override void Entry(IModHelper helper)
         {
@@ -60,8 +56,6 @@ namespace Sprint
                 if (isSprintKeyPressed || isControllerSprintButtonPressed && Game1.player.isMoving())
                 {
                     playerSprinting = true;
-                    secondsUntilIncreaseSpeed = 5;
-                    Game1.player.Speed += this.sprintSpeed;
                 }
 
                 else if (isWalkKeyPressed && Game1.player.isMoving())
@@ -73,35 +67,15 @@ namespace Sprint
 
         private void OneSecond(object sender, OneSecondUpdateTickedEventArgs e)
         {
-            if (!Context.IsPlayerFree)
+            if (playerSprinting == true)
             {
-                return;
-            }
-
-            /*************
-             **Sprinting**
-             *************/
-            if (playerSprinting == true && playerWalking == false)
-            {
-                if (secondsUntilIncreaseSpeed > 0)
+                addedSprintSpeed++;
+                Game1.player.Speed += addedSprintSpeed;
+                if (addedSprintSpeed > 5)
                 {
-                    secondsUntilIncreaseSpeed--;
-                    if (secondsUntilIncreaseSpeed <= 4)
-                    {
-                        sprintSpeed += 2;
-                    }
-                    else if (secondsUntilIncreaseSpeed <= 2)
-                    {
-                        sprintSpeed += 4;
-                    }
-                    else if (secondsUntilIncreaseSpeed <= 0)
-                    {
-                        sprintSpeed += 5;
-                    }
+                    return;
                 }
             }
-            
-            /* Walking is stored at the OnButtonPressed method */
         }
     }
 }
