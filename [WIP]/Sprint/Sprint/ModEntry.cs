@@ -14,12 +14,10 @@ namespace Sprint
 {
     class ModEntry : Mod
     {
-        /************
-         ***Fields***
-         ************/
+        //reference ModConfig class
         private ModConfig Config;
 
-        private int addedSpeed = 0;
+        //seconds until buff changes
         private int secondsUntilSpeedIncrement = 4;
         
         /*-Buffs-*/
@@ -87,7 +85,7 @@ namespace Sprint
                 }
                 else if (secondsUntilSpeedIncrement <= 2)
                 {
-                    sprintBuff.millisecondsDuration = 5000;
+                    sprintBuff2.millisecondsDuration = 5000;
                 }
             }
         }
