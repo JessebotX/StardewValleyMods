@@ -19,61 +19,75 @@ namespace Sprint
          ************/
         private ModConfig Config;
 
-        private bool playerSprinting = false;
+        private int addedSpeed = 0;
+        private int secondsUntilSpeedIncrement = 4;
+        
+        /*-Buffs-*/
+        private Buff sprintBuff = new Buff(0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 1, "Sprint", "Sprint");
+        private Buff sprintBuff2 = new Buff(0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 1, "Sprint", "Sprint");
+        //-------//
 
-        private int addedSprintSpeed = 0;
+        private bool playerSprinting = false;
 
         public override void Entry(IModHelper helper)
         {
             /* Event Handlers */
-            this.Helper.Events.Input.ButtonPressed += this.OnButtonPressed;
+            this.Helper.Events.Input.ButtonPressed += this.ButtonPressed;
             this.Helper.Events.GameLoop.OneSecondUpdateTicked += this.OneSecond;
+            this.Helper.Events.GameLoop.UpdateTicked += this.UpdateTicked;
 
             /* Read Config */
             this.Config = helper.ReadConfig<ModConfig>();
         }
 
-        private void OnButtonPressed(object sender, ButtonPressedEventArgs e)
+        private void ButtonPressed(object sender, ButtonPressedEventArgs e)
         {
-            //if player isn't free to act in the world, do nothing
             if (!Context.IsPlayerFree)
             {
                 return;
             }
 
-            else
+            this.Helper.Input.Suppress(this.Config.SprintKey);
+            this.Helper.Input.Suppress(this.Config.ControllerSprintButton);
+
+            bool sprintKeyPressed = this.Helper.Input.IsDown(this.Config.SprintKey | this.Config.ControllerSprintButton);
+
+            if (sprintKeyPressed && Game1.player.isMoving())
             {
-                //suppress game keybinds depending on config values
-                this.Helper.Input.Suppress(this.Config.SprintKey);
-                this.Helper.Input.Suppress(this.Config.ControllerSprintButton);
-                this.Helper.Input.Suppress(this.Config.SlowDownKey);
-
-                //is the key/button being pressed
-                bool isSprintKeyPressed = this.Helper.Input.IsDown(this.Config.SprintKey);
-                bool isControllerSprintButtonPressed = this.Helper.Input.IsDown(this.Config.ControllerSprintButton);
-                bool isWalkKeyPressed = this.Helper.Input.IsDown(this.Config.SlowDownKey);
-
-                if (isSprintKeyPressed || isControllerSprintButtonPressed && Game1.player.isMoving())
+                playerSprinting = true;
+                if (secondsUntilSpeedIncrement <= 4 && secondsUntilSpeedIncrement > 2)
                 {
-                    playerSprinting = true;
+                    Game1.buffsDisplay.addOtherBuff(sprintBuff);
                 }
-
-                else if (isWalkKeyPressed && Game1.player.isMoving())
+                else if (secondsUntilSpeedIncrement <= 2)
                 {
-                    Game1.player.canOnlyWalk = true;
+                    Game1.buffsDisplay.addOtherBuff(sprintBuff2);
                 }
             }
         }
 
         private void OneSecond(object sender, OneSecondUpdateTickedEventArgs e)
         {
-            if (playerSprinting == true)
+            if (playerSprinting)
             {
-                addedSprintSpeed++;
-                Game1.player.Speed += addedSprintSpeed;
-                if (addedSprintSpeed > 5)
+                if (secondsUntilSpeedIncrement > 0)
                 {
-                    return;
+                    secondsUntilSpeedIncrement--;
+                }
+            }
+        }
+
+        private void UpdateTicked(object sender, UpdateTickedEventArgs e)
+        {
+            if (playerSprinting)
+            {
+                if (secondsUntilSpeedIncrement <= 4 && secondsUntilSpeedIncrement > 2)
+                {
+                    sprintBuff.millisecondsDuration = 5000;
+                }
+                else if (secondsUntilSpeedIncrement <= 2)
+                {
+                    sprintBuff.millisecondsDuration = 5000;
                 }
             }
         }

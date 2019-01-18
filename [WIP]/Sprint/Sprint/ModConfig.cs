@@ -16,7 +16,5 @@ namespace Sprint
     {
         public SButton SprintKey { get; set; } = SButton.LeftShift;
         public SButton ControllerSprintButton { get; set; } = SButton.LeftStick;
-
-        public SButton SlowDownKey { get; set; } = SButton.LeftControl;
     }
 }
