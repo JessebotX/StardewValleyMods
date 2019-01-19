@@ -17,6 +17,7 @@ namespace Sprint
         //reference ModConfig class
         private ModConfig Config;
 
+        private bool sprintBuffExists = false;
         private bool playerSprinting = false;
         private int secondsUntilIncrement = 4;
         private int buffDuration = 1000;
@@ -44,11 +45,19 @@ namespace Sprint
             {
                 this.Helper.Input.Suppress(this.Config.SprintKey);
                 bool sprintKeyPressed = this.Helper.Input.IsDown(this.Config.SprintKey);
-                if (sprintKeyPressed && Game1.player.isMoving())
+                if (sprintKeyPressed)
                 {
-                    playerSprinting = true;
+                    if (sprintBuffExists)
+                    {
+                        return;
+                    }
 
-                    sprintingBuff.millisecondsDuration = buffDuration;
+                    else
+                    {
+                        playerSprinting = true;
+
+                        sprintingBuff.millisecondsDuration = buffDuration;
+                    }
                 }
 
                 else
@@ -69,6 +78,7 @@ namespace Sprint
                 if (playerSprinting)
                 {
                     Game1.buffsDisplay.addOtherBuff(sprintingBuff);
+                    sprintBuffExists = true;
                 }
             }
         }
