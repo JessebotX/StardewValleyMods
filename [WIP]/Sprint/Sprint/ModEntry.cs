@@ -64,9 +64,10 @@ namespace Sprint
                 if (sprintKeyPressed)
                 {
                     playerSprinting = true;
-                    Game1.player.addedSpeed += sprintSpeed;
 
-                    if (secondsUntilIncrement == 4 )
+                    Game1.player.addedSpeed = sprintSpeed;
+
+                    if (secondsUntilIncrement == 4)
                     {
                         sprintSpeed = 2;
                     }
@@ -78,6 +79,11 @@ namespace Sprint
                     {
                         sprintSpeed = 4;
                     }
+                }
+
+                else
+                {
+                    Game1.player.addedSpeed = 0;
                 }
             }
         }
