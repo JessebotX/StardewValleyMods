@@ -16,46 +16,31 @@ namespace Sprint
     {
         //reference ModConfig class
         private ModConfig Config;
-        
-        /*-Buffs-*/
-        private Buff sprintBuff = new Buff(0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 1, "Sprint", "Sprint");
-        //-------//
-
-        private bool playerSprinting = false;
 
         public override void Entry(IModHelper helper)
         {
             /* Event Handlers */
-            this.Helper.Events.Input.ButtonPressed += this.ButtonPressed;
-            this.Helper.Events.GameLoop.UpdateTicked += this.UpdateTicked;
+            helper.Events.GameLoop.UpdateTicked += this.UpdateTicked;
 
             /* Read Config */
             this.Config = helper.ReadConfig<ModConfig>();
         }
 
-        private void ButtonPressed(object sender, ButtonPressedEventArgs e)
+        private void UpdateTicked(object sender, UpdateTickedEventArgs e)
         {
             if (!Context.IsPlayerFree)
             {
                 return;
             }
 
-            bool sprintKeyPressed = this.Helper.Input.IsDown(this.Config.SprintKey | this.Config.ControllerSprintButton);
-
-            if (sprintKeyPressed)
+            else
             {
-                playerSprinting = true;
-                Game1.buffsDisplay.addOtherBuff(sprintBuff);
-            }
-        }
-
-        private void UpdateTicked(object sender, UpdateTickedEventArgs e)
-        {
-            this.Helper.Input.Suppress(this.Config.SprintKey);
-            this.Helper.Input.Suppress(this.Config.ControllerSprintButton);
-            if (playerSprinting)
-            {
-                sprintBuff.millisecondsDuration = 5000;
+                this.Helper.Input.Suppress(this.Config.SprintKey);
+                bool sprintKeyPressed = this.Helper.Input.IsDown(this.Config.SprintKey);
+                if (sprintKeyPressed)
+                {
+                    Game1.player.addedSpeed = 4;
+                }
             }
         }
     }
