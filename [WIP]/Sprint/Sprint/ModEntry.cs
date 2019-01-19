@@ -20,36 +20,20 @@ namespace Sprint
         private bool playerSprinting = false;
         private int sprintSpeed = 0;
         private int secondsUntilIncrement = 4;
+        private int buffDuration = 1000;
+
+        //reference buff
+        private Buff sprintingBuff = new Buff(0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 1, "Sprinting", "Sprinting");
 
         public override void Entry(IModHelper helper)
         {
             /* Event Handlers */
+            helper.Events.Input.ButtonPressed += this.ButtonPressed;
             helper.Events.GameLoop.UpdateTicked += this.UpdateTicked;
-            helper.Events.GameLoop.OneSecondUpdateTicked += this.OneSecond;
 
             /* Read Config */
             this.Config = helper.ReadConfig<ModConfig>();
         }
-
-        private void OneSecond(object sender, OneSecondUpdateTickedEventArgs e)
-        {
-            if (!Context.IsPlayerFree)
-            {
-                return;
-            }
-
-            else
-            {
-                if (playerSprinting)
-                {
-                    if (secondsUntilIncrement > 0)
-                    {
-                        secondsUntilIncrement--;
-                    }
-                }
-            }
-        }
-
         private void UpdateTicked(object sender, UpdateTickedEventArgs e)
         {
             if (!Context.IsPlayerFree)
@@ -61,29 +45,31 @@ namespace Sprint
             {
                 this.Helper.Input.Suppress(this.Config.SprintKey);
                 bool sprintKeyPressed = this.Helper.Input.IsDown(this.Config.SprintKey);
-                if (sprintKeyPressed)
+                if (sprintKeyPressed && Game1.player.isMoving())
                 {
                     playerSprinting = true;
 
-                    Game1.player.addedSpeed = sprintSpeed;
-
-                    if (secondsUntilIncrement == 4)
-                    {
-                        sprintSpeed = 2;
-                    }
-                    else if (secondsUntilIncrement <= 3 && secondsUntilIncrement > 1)
-                    {
-                        sprintSpeed = 3;
-                    }
-                    else if (secondsUntilIncrement <= 1)
-                    {
-                        sprintSpeed = 4;
-                    }
+                    sprintingBuff.millisecondsDuration = buffDuration;
                 }
 
                 else
                 {
-                    Game1.player.addedSpeed = 0;
+                    playerSprinting = false;
+                }
+            }
+        }
+        private void ButtonPressed(object sender, ButtonPressedEventArgs e)
+        {
+            if (!Context.IsPlayerFree)
+            {
+                return;
+            }
+
+            else
+            {
+                if (playerSprinting)
+                {
+                    Game1.buffsDisplay.addOtherBuff(sprintingBuff);
                 }
             }
         }
