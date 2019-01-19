@@ -17,25 +17,26 @@ namespace Sprint
         //reference ModConfig class
         private ModConfig Config;
 
-        private bool sprintBuffExists = false;
         private bool playerSprinting = false;
-        private int secondsUntilIncrement = 4;
-        private int buffDuration = 1000;
 
         //reference buff
-        private Buff sprintingBuff = new Buff(0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 1, "Sprinting", "Sprinting");
+        private Buff sprintingBuff = new Buff(0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 1, "Sprinting", "Sprinting");
 
         public override void Entry(IModHelper helper)
         {
             /* Event Handlers */
-            helper.Events.Input.ButtonPressed += this.ButtonPressed;
             helper.Events.GameLoop.UpdateTicked += this.UpdateTicked;
 
             /* Read Config */
             this.Config = helper.ReadConfig<ModConfig>();
         }
+
         private void UpdateTicked(object sender, UpdateTickedEventArgs e)
         {
+            this.Helper.Input.Suppress(this.Config.SprintKey);
+            bool isSprintKey = this.Helper.Input.IsDown(this.Config.SprintKey);
+
+            sprintingBuff.millisecondsDuration = 5000;
             if (!Context.IsPlayerFree)
             {
                 return;
@@ -43,44 +44,30 @@ namespace Sprint
 
             else
             {
-                this.Helper.Input.Suppress(this.Config.SprintKey);
-                bool sprintKeyPressed = this.Helper.Input.IsDown(this.Config.SprintKey);
-                if (sprintKeyPressed)
+                if (isSprintKey && !SprintBuffExists())
                 {
-                    if (sprintBuffExists)
-                    {
-                        return;
-                    }
+                    playerSprinting = true;
 
-                    else
-                    {
-                        playerSprinting = true;
-
-                        sprintingBuff.millisecondsDuration = buffDuration;
-                    }
+                    Game1.buffsDisplay.addOtherBuff(sprintingBuff);
                 }
 
                 else
                 {
-                    playerSprinting = false;
+                    Game1.buffsDisplay.otherBuffs.Remove(sprintingBuff);
+                    sprintingBuff.removeBuff();
+                    Game1.buffsDisplay.syncIcons();
                 }
             }
         }
-        private void ButtonPressed(object sender, ButtonPressedEventArgs e)
+
+        private bool SprintBuffExists()
         {
-            if (!Context.IsPlayerFree)
+            if (sprintingBuff == null)
             {
-                return;
+                return false;
             }
 
-            else
-            {
-                if (playerSprinting)
-                {
-                    Game1.buffsDisplay.addOtherBuff(sprintingBuff);
-                    sprintBuffExists = true;
-                }
-            }
+            return Game1.buffsDisplay.otherBuffs.Contains(sprintingBuff);
         }
     }
 }
