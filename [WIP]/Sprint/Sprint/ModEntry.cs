@@ -68,15 +68,15 @@ namespace Sprint
 
                     if (secondsUntilIncrement == 4 )
                     {
-                        sprintSpeed = 3;
+                        sprintSpeed = 1;
                     }
                     else if (secondsUntilIncrement <= 3 && secondsUntilIncrement > 1)
                     {
-                        sprintSpeed = 4;
+                        sprintSpeed = 2;
                     }
                     else if (secondsUntilIncrement <= 1)
                     {
-                        sprintSpeed = 5;
+                        sprintSpeed = 3;
                     }
                 }
             }
