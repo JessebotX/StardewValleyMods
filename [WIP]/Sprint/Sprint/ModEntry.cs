@@ -18,7 +18,6 @@ namespace Sprint
         private ModConfig Config;
 
         private bool playerSprinting = false;
-        private int sprintSpeed = 0;
         private int secondsUntilIncrement = 4;
         private int buffDuration = 1000;
 
