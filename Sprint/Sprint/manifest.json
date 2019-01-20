@@ -6,5 +6,5 @@
 	"UniqueID": "Jessebot.SprintSprintSprint",
 	"MinimumApiVersion": "2.10",
 	"EntryDLL": "Sprint.dll",
-	"UpdateKeys": []
+	"UpdateKeys": ["Nexus:3294"]
 }
