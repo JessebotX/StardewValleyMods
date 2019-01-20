@@ -26,15 +26,27 @@ namespace Sprint
         {
             /* Event Handlers */
             helper.Events.GameLoop.UpdateTicked += this.UpdateTicked;
+            helper.Events.GameLoop.OneSecondUpdateTicked += this.OneSecond;
 
             /* Read Config */
             this.Config = helper.ReadConfig<ModConfig>();
         }
 
+        /* Check if sprinting buff exists */
+        private bool SprintBuffExists()
+        {
+            if (sprintingBuff == null)
+            {
+                return false;
+            }
+
+            return Game1.buffsDisplay.otherBuffs.Contains(sprintingBuff);
+        }
+
         private void UpdateTicked(object sender, UpdateTickedEventArgs e)
         {
-            this.Helper.Input.Suppress(this.Config.SprintKey);
-            bool isSprintKey = this.Helper.Input.IsDown(this.Config.SprintKey);
+            this.Helper.Input.Suppress(this.Config.SprintKey); //suppresses game keybind so that you can use the sprint key
+            bool isSprintKey = this.Helper.Input.IsDown(this.Config.SprintKey); //check if sprint key is pressed
 
             sprintingBuff.millisecondsDuration = 5000;
             if (!Context.IsPlayerFree)
@@ -44,6 +56,7 @@ namespace Sprint
 
             else
             {
+                /* only create a `sprintingBuff` if it does not already exist */ 
                 if (isSprintKey && !SprintBuffExists())
                 {
                     playerSprinting = true;
@@ -60,14 +73,12 @@ namespace Sprint
             }
         }
 
-        private bool SprintBuffExists()
+        private void OneSecond(object sender, OneSecondUpdateTickedEventArgs e)
         {
-            if (sprintingBuff == null)
+            if (playerSprinting && !Game1.paused && Game1.player.isMoving())
             {
-                return false;
+                Game1.player.Stamina = Math.Min(Game1.player.MaxStamina, Game1.player.Stamina - 0.25f);
             }
-
-            return Game1.buffsDisplay.otherBuffs.Contains(sprintingBuff);
         }
     }
 }
