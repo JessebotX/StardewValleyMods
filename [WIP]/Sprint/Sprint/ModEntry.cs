@@ -77,7 +77,7 @@ namespace Sprint
         {
             if (playerSprinting && !Game1.paused && Game1.player.isMoving())
             {
-                Game1.player.Stamina = Math.Min(Game1.player.MaxStamina, Game1.player.Stamina - 0.25f);
+                Game1.player.Stamina = Math.Min(Game1.player.MaxStamina, Game1.player.Stamina - 0.5f);
             }
         }
     }
