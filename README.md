@@ -3,7 +3,11 @@
 This is the source code for the best, poorly coded mods around!
 [My Nexus Mods Profile](https://www.nexusmods.com/users/55529772) **is where the good stuff is stored**
 
-#### C# Stardew Mods Hub
+- [C# Stardew Mods](#c-stardew-mods-hub)
+- [Contributing](#contributing)
+- [Licensing](#licensing)
+
+### C# Stardew Mods Hub
 **See my [Content Pack Mods Hub](.ContentPackMods)**
 
 | **Mod Name** | Source Code Folder | Mod Download | Source Code Link | Release Notes |
