@@ -25,4 +25,4 @@ _**If one of my mods become incompatible or broken, please unofficially update t
 ## Licensing
 See [MIT License](https://github.com/JessebotX/StardewMods/blob/master/LICENSE)
 
-No permission needed for use/distribution of my assets. Credit me is all you need.
+No permission needed for use/distribution/modification of my assets. You are not required to credit me if you use my assets.
