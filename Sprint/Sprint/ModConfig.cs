@@ -15,7 +15,5 @@ namespace Sprint
     class ModConfig
     {
         public SButton SprintKey { get; set; } = SButton.LeftShift;
-        public bool StaminaDrain { get; set; } = true;
-        public float StaminaDrainPerSecond { get; set; } = 0.5f;
     }
 }

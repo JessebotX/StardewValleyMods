@@ -75,9 +75,9 @@ namespace Sprint
 
         private void OneSecond(object sender, OneSecondUpdateTickedEventArgs e)
         {
-            if (playerSprinting && !Game1.paused && Game1.player.isMoving() && this.Config.StaminaDrain)
+            if (playerSprinting && !Game1.paused && Game1.player.isMoving())
             {
-                Game1.player.Stamina = Math.Min(Game1.player.MaxStamina, Game1.player.Stamina - this.Config.StaminaDrainPerSecond);
+                Game1.player.Stamina = Math.Min(Game1.player.MaxStamina, Game1.player.Stamina - 0.25f);
             }
         }
     }

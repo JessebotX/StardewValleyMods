@@ -1,5 +1,5 @@
 # Sprint Sprint Sprint!
-[(nexus download)](), [(github download)](https://github.com/JessebotX/StardewMods/releases/tag/Sprint)
+[(nexus download)](https://www.nexusmods.com/stardewvalley/mods/3294), [(github download)](https://github.com/JessebotX/StardewMods/releases/tag/Sprint)
 
 Hold to sprint. Configurable key bind.
 
@@ -7,7 +7,6 @@ Hold to sprint. Configurable key bind.
 - Hold button down to get a sprint buff
   - Also works if you're on a horse or you have a mod or ate an item that boosts player speed. They stack!
 - Lose stamina as you keep moving and sprinting
-  - Configurable. Default: ```-0.5 stamina/second```
 
 ## Compatibility
 - Works with SMAPI 2.10+
