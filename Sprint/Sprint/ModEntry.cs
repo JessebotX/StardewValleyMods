@@ -25,30 +25,36 @@ namespace Sprint
         public override void Entry(IModHelper helper)
         {
             /* Event Handlers */
-            helper.Events.GameLoop.UpdateTicked += this.UpdateTicked;
-            helper.Events.GameLoop.OneSecondUpdateTicked += this.OneSecond;
+            helper.Events.Input.ButtonPressed += this.InputButtonPressed;
+            helper.Events.Input.ButtonReleased += this.InputButtonReleased;
+            helper.Events.GameLoop.UpdateTicked += this.GameLoopUpdateTicked;
+            helper.Events.GameLoop.OneSecondUpdateTicked += this.GameLoopOneSecond;
 
             /* Read Config */
             this.Config = helper.ReadConfig<ModConfig>();
         }
 
-        /* Check if sprinting buff exists */
-        private bool SprintBuffExists()
+        //when button is pressed
+        private void InputButtonPressed(object sender, ButtonPressedEventArgs e)
         {
-            if (sprintingBuff == null)
+            if Context
+            if (e.Button == this.Config.SprintKey)
             {
-                return false;
+                playerSprinting = true;
+                Game1.buffsDisplay.addOtherBuff(sprintingBuff);
             }
 
-            return Game1.buffsDisplay.otherBuffs.Contains(sprintingBuff);
+
         }
 
-        private void UpdateTicked(object sender, UpdateTickedEventArgs e)
+        //when button is released
+        private void InputButtonReleased(object sender, ButtonReleasedEventArgs e)
         {
-            this.Helper.Input.Suppress(this.Config.SprintKey); //suppresses game keybind so that you can use the sprint key
-            bool isSprintKey = this.Helper.Input.IsDown(this.Config.SprintKey); //check if sprint key is pressed
 
-            sprintingBuff.millisecondsDuration = 5000;
+        }
+
+        private void GameLoopUpdateTicked(object sender, UpdateTickedEventArgs e)
+        {
             if (!Context.IsPlayerFree)
             {
                 return;
@@ -56,24 +62,16 @@ namespace Sprint
 
             else
             {
-                /* only create a `sprintingBuff` if it does not already exist */ 
-                if (isSprintKey && !SprintBuffExists())
+                this.Helper.Input.Suppress(this.Config.SprintKey); //suppresses game keybind so that you can use the sprint key
+                this.Helper.Input.Suppress(this.Config.WalkKey); //suppresses game keybind so that you can use the walk key
+                if (playerSprinting)
                 {
-                    playerSprinting = true;
-
-                    Game1.buffsDisplay.addOtherBuff(sprintingBuff);
-                }
-
-                else
-                {
-                    Game1.buffsDisplay.otherBuffs.Remove(sprintingBuff);
-                    sprintingBuff.removeBuff();
-                    Game1.buffsDisplay.syncIcons();
+                    sprintingBuff.millisecondsDuration = 5000;
                 }
             }
-        }
+        }    
 
-        private void OneSecond(object sender, OneSecondUpdateTickedEventArgs e)
+        private void GameLoopOneSecond(object sender, OneSecondUpdateTickedEventArgs e)
         {
             if (playerSprinting && !Game1.paused && Game1.player.isMoving())
             {
