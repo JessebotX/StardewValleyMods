@@ -56,6 +56,7 @@ namespace Sprint
 
                 else if (isSprintKey && !SprintBuff2Exists() && this.Config.SprintKey == SButton.LeftShift)
                 {
+                    //left shift only
                     playerSprinting = true;
 
                     Game1.buffsDisplay.addOtherBuff(sprintingBuff2);
@@ -63,6 +64,9 @@ namespace Sprint
 
                 else
                 {
+                    playerSprinting = false;
+
+                    //remove buffs
                     Game1.buffsDisplay.otherBuffs.Remove(sprintingBuff);
                     Game1.buffsDisplay.otherBuffs.Remove(sprintingBuff2);
                     sprintingBuff.removeBuff();
