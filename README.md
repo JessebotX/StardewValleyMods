@@ -23,6 +23,6 @@ See [Contribution Guidelines](https://github.com/JessebotX/StardewMods/blob/mast
 _**If one of my mods become incompatible or broken, please unofficially update them as soon as possible. I ask that when I return, I can take back the updates and stuff done on the unofficial update**_
 
 ## Licensing
-See [MIT License](https://github.com/JessebotX/StardewMods/blob/master/LICENSE)
+See [Unlicense License](https://github.com/JessebotX/StardewMods/blob/master/LICENSE)
 
 No permission needed for use/distribution/modification of my assets. You are **not required to credit me**.
