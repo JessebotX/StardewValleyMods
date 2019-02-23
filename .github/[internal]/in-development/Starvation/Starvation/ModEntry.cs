@@ -18,8 +18,12 @@ namespace Starvation
         private Texture2D HungerBar;
 
         private double Hunger = 100;
+        private double MaxHunger = 100;
         private int StaminaCooldown = 0;
         private float LastStamina;
+
+        private bool IsExtremelyFull;
+        private bool CheckIfExtremelyFull = false;
 
         public override void Entry(IModHelper helper)
         {
@@ -58,8 +62,23 @@ namespace Starvation
                     if (StaminaCooldown <= 0)
                         Game1.player.Stamina = Math.Min(Game1.player.MaxStamina, Game1.player.Stamina + 1);
                 }
-            }
 
+                if (Hunger > MaxHunger)
+                    IsExtremelyFull = true;
+
+                if (IsExtremelyFull && CheckIfExtremelyFull == false)
+                {
+                    CheckIfExtremelyFull = true;
+
+                    Game1.player.MaxStamina /= 25;
+                }
+
+                else if (Hunger <= MaxHunger)
+                {
+                    IsExtremelyFull = false;
+                    CheckIfExtremelyFull = false;
+                }
+            }
             LastStamina = Game1.player.Stamina;
         }
 
