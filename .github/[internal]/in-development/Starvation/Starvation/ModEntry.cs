@@ -70,13 +70,14 @@ namespace Starvation
                 {
                     CheckIfExtremelyFull = true;
 
-                    Game1.player.MaxStamina /= 25;
+                    Game1.player.MaxStamina /= 2;
                 }
 
                 else if (Hunger <= MaxHunger)
                 {
                     IsExtremelyFull = false;
                     CheckIfExtremelyFull = false;
+                    Game1.player.MaxStamina *= 2;
                 }
             }
             LastStamina = Game1.player.Stamina;
