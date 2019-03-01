@@ -12,13 +12,10 @@ using xTile;
 
 namespace BeyondTheValley
 {
-    class ModEntry : Mod
+    class ModEntry : Mod, IAssetLoader
     {
         public override void Entry(IModHelper helper)
-        {
-            /* IAsset */
-            helper.Content.AssetLoaders.Add(new Farm_Loader());
-
+        { 
             /* Helper Events */
             helper.Events.GameLoop.SaveLoaded += this.GameLoop_SaveLoaded;
         }
@@ -33,5 +30,14 @@ namespace BeyondTheValley
             Game1.locations.Add(FarmShed);
         }
 
+        public bool CanLoad<T>(IAssetInfo asset)
+        {
+            return asset.AssetNameEquals("Maps/Farm");
+        }
+
+        public T Load<T>(IAssetInfo asset)
+        {
+            return this.Helper.Content.Load<T>("assets/Maps/FarmMaps/Farm.tbin");
+        }
     }
 }
