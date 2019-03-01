@@ -14,10 +14,15 @@ namespace BeyondTheValley
 {
     class IAssetLoader
     {
-        Farm_Loader loader = new Farm_Loader();
-        public Farm_Loader()
+        Farm_Loader loader = new Farm_Loader;
+        public bool CanLoad<T>(IAssetInfo asset)
         {
+            return asset.AssetNameEquals("Maps/Farm.tbin");
+        }
+
+        public T Load<T>(IAssetInfo asset)
+        {
+            return this.Helper.Content.Load<T>("assets/Maps/FarmMaps/Farm.tbin");
         }
     }
-
 }
