@@ -8,10 +8,30 @@ using StardewModdingAPI;
 using Microsoft.Xna.Framework;
 using StardewModdingAPI.Framework;
 using StardewModdingAPI.Events;
+using xTile;
 
 namespace BeyondTheValley
 {
-    class ModEntry
+    class ModEntry : Mod
     {
+        public override void Entry(IModHelper helper)
+        {
+            /* IAsset */
+            helper.Content.AssetLoaders.Add(new Farm_Loader());
+
+            /* Helper Events */
+            helper.Events.GameLoop.SaveLoaded += this.GameLoop_SaveLoaded;
+        }
+
+        private void GameLoop_SaveLoaded(object sender, SaveLoadedEventArgs e)
+        {
+            this.Helper.Content.Load<Map>("assets/Maps/FarmMaps/Farming_FarmShed.tbin", ContentSource.ModFolder);
+
+            string FarmShedMapAssetKey = this.Helper.Content.GetActualAssetKey("assets/Maps/FarmMaps/Farming_FarmShed.tbin", ContentSource.ModFolder);
+
+            GameLocation FarmShed = new GameLocation(FarmShedMapAssetKey, "FarmShed") { IsOutdoors = false, IsFarm = false };
+            Game1.locations.Add(FarmShed);
+        }
+
     }
 }
