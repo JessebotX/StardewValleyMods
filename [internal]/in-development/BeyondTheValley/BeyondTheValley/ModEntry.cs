@@ -27,11 +27,16 @@ namespace BeyondTheValley
             {
                 bool ContentFileExists = File.Exists(Path.Combine(ContentPack.DirectoryPath, "content.json"));
 
-                ContentPackModel Pack = ContentPack.ReadJsonFile<ContentPackModel>("content.json");
+                ReplaceFileModel Pack = ContentPack.ReadJsonFile<ReplaceFileModel>("content.json");
                 this.Monitor.Log("Reading: {ContentPack.Manifest.Name} {ContentPack.Manifest.Version} by {ContentPack.Manifest.Author} from {ContentPack.DirectoryPath} (ID: {ContentPack.Manifest.UniqueID})", LogLevel.Trace);
 
                 if (!ContentFileExists)
                     this.Monitor.Log("{ContentPack.Manifest.Name}({ContentPack.Manifest.Version}) by {ContentPack.Manifest.Author} is missing a content.json file. Mod will be ignored", LogLevel.Warn);
+
+                foreach (ReplaceFileModel replacement in Pack.ReplaceFiles)
+                {
+                    this.Monitor.Log($"Replacing {replacement.ReplaceFile} with {replacement.FromFile}");
+                }
             }
 
             /* Helper Events */
@@ -41,7 +46,6 @@ namespace BeyondTheValley
 
         private void GameLoop_GameLaunched(object sender, GameLaunchedEventArgs e)
         {
-
         }
 
         private void GameLoop_SaveLoaded(object sender, SaveLoadedEventArgs e)
