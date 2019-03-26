@@ -9,50 +9,87 @@ using Microsoft.Xna.Framework;
 using StardewModdingAPI.Framework;
 using StardewModdingAPI.Events;
 using xTile;
+using xTile.Layers;
+using xTile.Tiles;
 using System.IO;
+using BeyondTheValley.Framework;
 
 namespace BeyondTheValley
 {
     class ModEntry : Mod, IAssetLoader
-    { 
+    {
+        public GameLocation Farm_Foraging = Game1.getLocationFromName("Farm_Foraging");
+
         public override void Entry(IModHelper helper)
         {
+            /* Content Packs */
+            foreach (IContentPack ContentPack in this.Helper.ContentPacks.GetOwned())
+            {
+                bool ContentFileExists = File.Exists(Path.Combine(ContentPack.DirectoryPath, "content.json"));
+
+                ContentPackModel Pack = ContentPack.ReadJsonFile<ContentPackModel>("content.json");
+                this.Monitor.Log("Reading: {ContentPack.Manifest.Name} {ContentPack.Manifest.Version} by {ContentPack.Manifest.Author} from {ContentPack.DirectoryPath} (ID: {ContentPack.Manifest.UniqueID})", LogLevel.Trace);
+
+                if (!ContentFileExists)
+                    this.Monitor.Log("{ContentPack.Manifest.Name}({ContentPack.Manifest.Version}) by {ContentPack.Manifest.Author} is missing a content.json file. Mod will be ignored", LogLevel.Warn);
+            }
+
             /* Helper Events */
+            helper.Events.GameLoop.GameLaunched += this.GameLoop_GameLaunched;
             helper.Events.GameLoop.SaveLoaded += this.GameLoop_SaveLoaded;
+        }
+
+        private void GameLoop_GameLaunched(object sender, GameLaunchedEventArgs e)
+        {
+
         }
 
         private void GameLoop_SaveLoaded(object sender, SaveLoadedEventArgs e)
         {
-            /* Farm Shed */
-            this.Helper.Content.Load<Map>("assets/Maps/FarmMaps/Farming_FarmShed.tbin", ContentSource.ModFolder);
+            if (Game1.player.mailReceived.Contains("ccVault"))
+            {
+                //----------Farm_Foraging--------------------//
+                /// <summary> removes north fences on Forest Farm </summary>
+                Layer Farm_Foraging_Front = Farm_Foraging.map.GetLayer("Buildings");
+                TileSheet spring_outdoorsTileSheet = Farm_Foraging.map.GetTileSheet("untitled tile sheet");
 
-            string FarmShedMapAssetKey = this.Helper.Content.GetActualAssetKey("assets/Maps/FarmMaps/Farming_FarmShed.tbin", ContentSource.ModFolder);
+                Farm_Foraging.removeTile(61, 50, "Front");
+                Farm_Foraging.removeTile(62, 50, "Front");
+                Farm_Foraging.removeTile(61, 51, "Buildings");
+                Farm_Foraging.removeTile(62, 51, "Buildings"); 
 
-            GameLocation FarmShed = new GameLocation(FarmShedMapAssetKey, "FarmShed") { IsOutdoors = false, IsFarm = false };
-            Game1.locations.Add(FarmShed);
-            //-----------//
+                for (int TileY = 53; TileY < 90; TileY++)
+                {
+                    Farm_Foraging.removeTile(44, TileY, "Buildings");
+                    Farm_Foraging.removeTile(44, TileY, "Front");
+                }
+
+                Farm_Foraging_Front.Tiles[44, 88] = new StaticTile(Farm_Foraging_Front, spring_outdoorsTileSheet, BlendMode.Alpha, tileIndex: 358);
+                //-------------------------------------------//
+            }
         }
 
         public bool CanLoad<T>(IAssetInfo asset)
         {
-            //Standard Farm
+            // Standard Farm/Farm
             if (asset.AssetNameEquals("Maps/Farm"))
                 return true;
 
-            //Forest Farm
+            // Forest Farm/Farm_Foraging
             else if (asset.AssetNameEquals("Maps/Farm_Foraging"))
                 return true;
 
-            //Cindersnap Forest
+            // Cindersap Forest
             else
                 return asset.AssetNameEquals("Maps/Forest");
         }
 
         public T Load<T>(IAssetInfo asset)
         {
-            //Standard Farm
-            if (asset.AssetNameEquals("Maps/Farm"))
-                return this.Helper.Content.Load<T>("assets/Maps/FarmMaps/Farm.tbin");
+            //Standard Farm/Farm
+            if ()
+                if (asset.AssetNameEquals("Maps/Farm"))
+                    return this.Helper.Content.Load<T>("assets/Maps/FarmMaps/Farm.tbin");
 
             else
                 return this.Helper.Content.Load<T>("assets/Maps/FarmMaps/Farm_Foraging.tbin");
