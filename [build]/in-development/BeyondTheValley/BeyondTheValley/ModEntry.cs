@@ -37,13 +37,13 @@ namespace BeyondTheValley
             {
                 bool contentFileExists = File.Exists(Path.Combine(contentPack.DirectoryPath, "content.json"));
 
-                ContentPackModel Pack = contentPack.ReadJsonFile<ContentPackModel>("content.json");
+                ContentPackModel cPack = contentPack.ReadJsonFile<ContentPackModel>("content.json");
                 this.Monitor.Log($"Reading: {contentPack.Manifest.Name} {contentPack.Manifest.Version} by {contentPack.Manifest.Author} from {contentPack.DirectoryPath} (ID: {contentPack.Manifest.UniqueID})", LogLevel.Trace);
 
                 if (!contentFileExists)
                     this.Monitor.Log($"{contentPack.Manifest.Name}({contentPack.Manifest.Version}) by {contentPack.Manifest.Author} is missing a content.json file. Mod will be ignored", LogLevel.Warn);
 
-                foreach (ReplaceFileModel contentPackEdit in Pack.ReplaceFiles)
+                foreach (ReplaceFileModel contentPackEdit in cPack.ReplaceFiles)
                 {
                     this.Monitor.Log($"Replacing {contentPackEdit.ReplaceFile} with {contentPackEdit.FromFile}", LogLevel.Trace);
 
@@ -177,7 +177,12 @@ namespace BeyondTheValley
                                     {
                                         Game1.player.currentLocation.removeTile(coordX, coordY, strLayer);
 
-                                        var saveDeletedTiles = this.Helper.Data.ReadSaveData
+                                        var saveDeletedTiles = this.Helper.Data.ReadSaveData<SaveDeletedTilesModel>("CopperAxe.DeletedTiles");
+                                        var inputArgs = new List<string>();
+                                        inputArgs.Add(Convert.ToString(coordX));
+                                        inputArgs.Add(Convert.ToString(coordY));
+                                        inputArgs.Add(strLayer);
+                                        
                                         this.Monitor.Log($"Action CopperAxe, removed the tile on [{coordX}, {coordY}] from the {strLayer} Layer", LogLevel.Trace);
                                     }
                                 }

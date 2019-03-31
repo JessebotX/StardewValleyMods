@@ -44,7 +44,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Framework\ContentPackModel.cs" />
+    <Compile Include="Framework\CopperAxeDeleteTilesModel.cs" />
     <Compile Include="Framework\ReplaceFileModel.cs" />
+    <Compile Include="Framework\SaveDeletedTilesModel.cs" />
     <Compile Include="ModEntry.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
