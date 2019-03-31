@@ -13,6 +13,7 @@ using xTile.Layers;
 using xTile.Tiles;
 using System.IO;
 using BeyondTheValley.Framework;
+using StardewValley.Tools;
 
 namespace BeyondTheValley
 {
@@ -20,56 +21,89 @@ namespace BeyondTheValley
     {
         /* content pack replacement */
         /// <summary> content pack replaces Farm </summary>
-        public bool ReplaceFarm = false;
+        public bool replaceFarm = false;
         /// <summary> content pack replaces Farm </summary>
-        public bool ReplaceFarm_Foraging = false;
+        public bool replaceFarm_Foraging = false;
 
         public GameLocation Farm_Foraging = Game1.getLocationFromName("Farm_Foraging");
+
+        // other
+        private bool copperAxe;
 
         public override void Entry(IModHelper helper)
         {
             /* --------- Content Packs ------------ */
-            foreach (IContentPack ContentPack in this.Helper.ContentPacks.GetOwned())
+            foreach (IContentPack contentPack in this.Helper.ContentPacks.GetOwned())
             {
-                bool ContentFileExists = File.Exists(Path.Combine(ContentPack.DirectoryPath, "content.json"));
+                bool contentFileExists = File.Exists(Path.Combine(contentPack.DirectoryPath, "content.json"));
 
-                ContentPackModel Pack = ContentPack.ReadJsonFile<ContentPackModel>("content.json");
-                this.Monitor.Log("Reading: {ContentPack.Manifest.Name} {ContentPack.Manifest.Version} by {ContentPack.Manifest.Author} from {ContentPack.DirectoryPath} (ID: {ContentPack.Manifest.UniqueID})", LogLevel.Trace);
+                ContentPackModel Pack = contentPack.ReadJsonFile<ContentPackModel>("content.json");
+                this.Monitor.Log($"Reading: {contentPack.Manifest.Name} {contentPack.Manifest.Version} by {contentPack.Manifest.Author} from {contentPack.DirectoryPath} (ID: {contentPack.Manifest.UniqueID})", LogLevel.Trace);
 
-                if (!ContentFileExists)
-                    this.Monitor.Log("{ContentPack.Manifest.Name}({ContentPack.Manifest.Version}) by {ContentPack.Manifest.Author} is missing a content.json file. Mod will be ignored", LogLevel.Warn);
+                if (!contentFileExists)
+                    this.Monitor.Log($"{contentPack.Manifest.Name}({contentPack.Manifest.Version}) by {contentPack.Manifest.Author} is missing a content.json file. Mod will be ignored", LogLevel.Warn);
 
-                foreach (ReplaceFileModel ContentPackEdit in Pack.ReplaceFiles)
+                foreach (ReplaceFileModel contentPackEdit in Pack.ReplaceFiles)
                 {
-                    this.Monitor.Log($"Replacing {ContentPackEdit.ReplaceFile} with {ContentPackEdit.FromFile}", LogLevel.Trace);
+                    this.Monitor.Log($"Replacing {contentPackEdit.ReplaceFile} with {contentPackEdit.FromFile}", LogLevel.Trace);
 
                     /* Check if content pack replaces one of the following files */
                     /// <summary> If content pack replaces Farm/Standard Farm </summary>
-                    if (ContentPackEdit.ReplaceFile == "assets/Maps/FarmMaps/Farm.tbin")
-                        ReplaceFarm = true;
+                    if (contentPackEdit.ReplaceFile == "assets/Maps/FarmMaps/Farm.tbin")
+                        replaceFarm = true;
                     /// <summary> If content pack
-                    if (ContentPackEdit.ReplaceFile == "assets/Maps/FarmMaps/Farm_Foraging.tbin")
-                        ReplaceFarm_Foraging = true;
+                    if (contentPackEdit.ReplaceFile == "assets/Maps/FarmMaps/Farm_Foraging.tbin")
+                        replaceFarm_Foraging = true;
                 }
             }
             //--------------------------------------//
 
             /* Helper Events */
-            helper.Events.GameLoop.GameLaunched += this.GameLoop_GameLaunched;
-            helper.Events.GameLoop.DayStarted += this.GameLoop_DayStarted;
+            helper.Events.GameLoop.GameLaunched += this.GameLaunched;
+            helper.Events.GameLoop.DayStarted += this.DayStarted;
+            helper.Events.Input.ButtonPressed += this.ButtonPressed;
+            helper.Events.GameLoop.SaveLoaded += this.SaveLoaded;
         }
 
-        private void GameLoop_GameLaunched(object sender, GameLaunchedEventArgs e)
+        public bool CanLoad<T>(IAssetInfo asset)
+        {
+            // Standard Farm/Farm
+            if (asset.AssetNameEquals("Maps/Farm"))
+                return true;
+
+            // Forest Farm/Farm_Foraging
+            else if (asset.AssetNameEquals("Maps/Farm_Foraging"))
+                return true;
+
+            // Cindersap Forest
+            else
+                return asset.AssetNameEquals("Maps/Forest");
+        }
+
+        public T Load<T>(IAssetInfo asset)
+        {
+            //Standard Farm/Farm
+            if (!replaceFarm && asset.AssetNameEquals("Maps/Farm"))
+                return this.Helper.Content.Load<T>("assets/Maps/FarmMaps/Farm.tbin");
+
+            else
+                return this.Helper.Content.Load<T>("assets/Maps/FarmMaps/Farm_Foraging.tbin");
+        }
+
+        private void GameLaunched(object sender, GameLaunchedEventArgs e)
         {
         }
 
-        private void GameLoop_DayStarted(object sender, DayStartedEventArgs e)
+        private void DayStarted(object sender, DayStartedEventArgs e)
         {
-            if (!ReplaceFarm_Foraging)
+            if (!Context.IsWorldReady)
+                return;
+
+            if (!replaceFarm_Foraging)
             {
                 if (Game1.player.mailReceived.Contains("ccVault"))
                 {
-                    //----------Farm_Foraging--------------------//
+                    //--------------Farm_Foraging----------------//
                     /// <summary> removes north fences on Forest Farm </summary>
                     Layer Farm_Foraging_Front = Farm_Foraging.map.GetLayer("Buildings");
                     TileSheet spring_outdoorsTileSheet = Farm_Foraging.map.GetTileSheet("untitled tile sheet");
@@ -91,29 +125,80 @@ namespace BeyondTheValley
             }
         }
 
-        public bool CanLoad<T>(IAssetInfo asset)
+        public void ButtonPressed(object sender, ButtonPressedEventArgs e)
         {
-            // Standard Farm/Farm
-            if (asset.AssetNameEquals("Maps/Farm"))
-                return true;
+            if (!Context.IsWorldReady)
+                return;
 
-            // Forest Farm/Farm_Foraging
-            else if (asset.AssetNameEquals("Maps/Farm_Foraging"))
-                return true;
+            /********************** 
+             **Custom Tile Actions 
+             **********************/
+            if (e.Button.IsActionButton())
+            {
+                // grabs player's cursor xy coords
+                Vector2 tile = e.Cursor.GrabTile;
 
-            // Cindersap Forest
-            else
-                return asset.AssetNameEquals("Maps/Forest");
+                string tileAction = Game1.player.currentLocation.doesTileHaveProperty((int)tile.X, (int)tile.Y, "Action", "Buildings");
+
+                if (tileAction != null)
+                {
+                    /* Action | CopperAxe (coordX) (coordY) (strLayer) */
+                    /// <summary> If interacted with your Copper axe(+) equipped, it will remove the following tiles on that layer, separate with '/' delimiter </summary>
+                    if (tileAction.StartsWith("CopperAxe "))
+                    {
+                        if (Game1.player.CurrentTool is Axe)
+                        {
+                            /* --- copper axe or better required --- */
+                            if (Game1.player.CurrentTool.UpgradeLevel >= 1)
+                            {
+                                // skips first word (CopperAxe)
+                                string arguments = String.Join(" ", tileAction.Split(' ').Skip(1)); 
+
+                                foreach (string[] arg in arguments.Split('/').Select(item => item.Split(' ')))
+                                {
+                                    /// check if a parsing error happened
+                                    bool parseError = false;
+
+                                    int coordX = int.Parse(arg[0]); // get tile's X coordinate
+                                    int coordY = int.Parse(arg[1]); // get tile's Y coordinate
+                                    string strLayer = arg[2]; // get tile's layer
+
+                                    // all possible values of {strLayer}
+                                    string[] layerValues = new string[] { "Back", "Buildings", "Front", "AlwaysFront" };
+                                    if (!layerValues.Contains(strLayer))
+                                    {
+                                        parseError = true;
+                                        this.Monitor.Log($"The specified layer(\"{strLayer}\") for 'Action CopperAxe' is not valid. Eligible values: \"Back, Buildings, Front, AlwaysFront\". The TileAction will not work", LogLevel.Error);
+                                    }
+
+                                    // success state
+                                    // only if no parsing error exists
+                                    else if (!parseError)
+                                    {
+                                        Game1.player.currentLocation.removeTile(coordX, coordY, strLayer);
+
+                                        var saveDeletedTiles = this.Helper.Data.ReadSaveData
+                                        this.Monitor.Log($"Action CopperAxe, removed the tile on [{coordX}, {coordY}] from the {strLayer} Layer", LogLevel.Trace);
+                                    }
+                                }
+                            }
+
+                            // does not have copper axe or better
+                            else
+                                Game1.drawObjectDialogue("It seems like I'll need a better axe first");
+                        }
+
+                        // does not have axe equipped
+                        else
+                            Game1.drawObjectDialogue("It seems like I can interact with this if my axe is equipped");
+                    }
+                }
+            }
         }
 
-        public T Load<T>(IAssetInfo asset)
+        private void SaveLoaded(object sender, SaveLoadedEventArgs e)
         {
-            //Standard Farm/Farm
-            if (!ReplaceFarm && asset.AssetNameEquals("Maps/Farm"))
-                return this.Helper.Content.Load<T>("assets/Maps/FarmMaps/Farm.tbin");
 
-            else
-                return this.Helper.Content.Load<T>("assets/Maps/FarmMaps/Farm_Foraging.tbin");
         }
     }
 }
