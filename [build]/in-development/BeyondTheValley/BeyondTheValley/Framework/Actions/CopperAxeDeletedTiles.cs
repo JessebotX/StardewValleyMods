@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BeyondTheValley.Framework
+namespace BeyondTheValley.Framework.Actions
 {
-    class SaveDeletedTilesModel
+    class CopperAxeDeletedTiles
     {
+        public List<string> inputArgs = new List<string>();
     }
 }

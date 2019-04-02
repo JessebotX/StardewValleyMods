@@ -13,6 +13,7 @@ using xTile.Layers;
 using xTile.Tiles;
 using System.IO;
 using BeyondTheValley.Framework;
+using BeyondTheValley.Framework.Actions;
 using StardewValley.Tools;
 
 namespace BeyondTheValley
@@ -28,7 +29,7 @@ namespace BeyondTheValley
         public GameLocation Farm_Foraging = Game1.getLocationFromName("Farm_Foraging");
 
         // other
-        private bool copperAxe;
+        private CopperAxeDeletedTiles _copperAxeTiles;
 
         public override void Entry(IModHelper helper)
         {
@@ -59,10 +60,10 @@ namespace BeyondTheValley
             //--------------------------------------//
 
             /* Helper Events */
-            helper.Events.GameLoop.GameLaunched += this.GameLaunched;
             helper.Events.GameLoop.DayStarted += this.DayStarted;
-            helper.Events.Input.ButtonPressed += this.ButtonPressed;
+            helper.Events.GameLoop.GameLaunched += this.GameLaunched;
             helper.Events.GameLoop.SaveLoaded += this.SaveLoaded;
+            helper.Events.Input.ButtonPressed += this.ButtonPressed;
         }
 
         public bool CanLoad<T>(IAssetInfo asset)
@@ -125,6 +126,26 @@ namespace BeyondTheValley
             }
         }
 
+        private void SaveLoaded(object sender, SaveLoadedEventArgs e)
+        {
+            _copperAxeTiles = this.Helper.Data.ReadSaveData<CopperAxeDeletedTiles>("CopperAxe.DeletedTiles") ?? new CopperAxeDeletedTiles();
+
+            if (_copperAxeTiles.inputArgs == null)
+                return;
+
+            foreach(string input in _copperAxeTiles.inputArgs)
+            {
+                string[] arg = input.Split(' ').ToArray();
+
+                int tileX = int.Parse(arg[0]);
+                int tileY = int.Parse(arg[1]);
+                string strLayer = arg[2];
+                string previousGameLocation = arg[3];
+
+                Game1.getLocationFromName(previousGameLocation).removeTile(tileX, tileY, strLayer); 
+            }
+        }
+
         public void ButtonPressed(object sender, ButtonPressedEventArgs e)
         {
             if (!Context.IsWorldReady)
@@ -152,16 +173,17 @@ namespace BeyondTheValley
                             if (Game1.player.CurrentTool.UpgradeLevel >= 1)
                             {
                                 // skips first word (CopperAxe)
-                                string arguments = String.Join(" ", tileAction.Split(' ').Skip(1)); 
+                                string arguments = String.Join(" ", tileAction.Split(' ').Skip(1));
 
                                 foreach (string[] arg in arguments.Split('/').Select(item => item.Split(' ')))
                                 {
                                     /// check if a parsing error happened
                                     bool parseError = false;
 
-                                    int coordX = int.Parse(arg[0]); // get tile's X coordinate
-                                    int coordY = int.Parse(arg[1]); // get tile's Y coordinate
+                                    int tileX = int.Parse(arg[0]); // get tile's X coordinate
+                                    int tileY = int.Parse(arg[1]); // get tile's Y coordinate
                                     string strLayer = arg[2]; // get tile's layer
+                                    string currentGameLocation = Game1.player.currentLocation.Name;
 
                                     // all possible values of {strLayer}
                                     string[] layerValues = new string[] { "Back", "Buildings", "Front", "AlwaysFront" };
@@ -175,15 +197,12 @@ namespace BeyondTheValley
                                     // only if no parsing error exists
                                     else if (!parseError)
                                     {
-                                        Game1.player.currentLocation.removeTile(coordX, coordY, strLayer);
+                                        Game1.player.currentLocation.removeTile(tileX, tileY, strLayer);
 
-                                        var saveDeletedTiles = this.Helper.Data.ReadSaveData<SaveDeletedTilesModel>("CopperAxe.DeletedTiles");
-                                        var inputArgs = new List<string>();
-                                        inputArgs.Add(Convert.ToString(coordX));
-                                        inputArgs.Add(Convert.ToString(coordY));
-                                        inputArgs.Add(strLayer);
-                                        
-                                        this.Monitor.Log($"Action CopperAxe, removed the tile on [{coordX}, {coordY}] from the {strLayer} Layer", LogLevel.Trace);
+                                        this.Helper.Data.WriteSaveData("CopperAxe.DeletedTiles", _copperAxeTiles);
+                                        _copperAxeTiles.inputArgs.Add(Convert.ToString(tileX) + " " + Convert.ToString(tileY) + " " + strLayer + " " + currentGameLocation);
+
+                                        this.Monitor.Log($"Action CopperAxe, removed the tile on [{tileX}, {tileY}] from the {strLayer} Layer", LogLevel.Trace);
                                     }
                                 }
                             }
@@ -199,11 +218,6 @@ namespace BeyondTheValley
                     }
                 }
             }
-        }
-
-        private void SaveLoaded(object sender, SaveLoadedEventArgs e)
-        {
-
         }
     }
 }
