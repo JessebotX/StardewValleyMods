@@ -15,6 +15,7 @@ using System.IO;
 using BeyondTheValley.Framework;
 using BeyondTheValley.Framework.Actions;
 using StardewValley.Tools;
+using System.Runtime.Remoting.Messaging;
 
 namespace BeyondTheValley
 {
@@ -28,8 +29,11 @@ namespace BeyondTheValley
 
         public GameLocation Farm_Foraging = Game1.getLocationFromName("Farm_Foraging");
 
-        // other
+        /* other */
+        /// <summary> CopperAxeDeletedTiles model </summary>
         private CopperAxeDeletedTiles _copperAxeTiles;
+
+        private string[] layerValues =  { "Back, Buildings, Front, AlwaysFront" };
 
         public override void Entry(IModHelper helper)
         {
@@ -61,8 +65,8 @@ namespace BeyondTheValley
 
             /* Helper Events */
             helper.Events.GameLoop.DayStarted += this.DayStarted;
-            helper.Events.GameLoop.GameLaunched += this.GameLaunched;
             helper.Events.GameLoop.SaveLoaded += this.SaveLoaded;
+            helper.Events.Multiplayer.ModMessageReceived += this.ModMessageReceived;
             helper.Events.Input.ButtonPressed += this.ButtonPressed;
         }
 
@@ -78,7 +82,7 @@ namespace BeyondTheValley
 
             // Cindersap Forest
             else
-                return asset.AssetNameEquals("Maps/Forest");
+                return asset.AssetNameEquals("Maps/Farm_Combat");
         }
 
         public T Load<T>(IAssetInfo asset)
@@ -87,12 +91,11 @@ namespace BeyondTheValley
             if (!replaceFarm && asset.AssetNameEquals("Maps/Farm"))
                 return this.Helper.Content.Load<T>("assets/Maps/FarmMaps/Farm.tbin");
 
-            else
-                return this.Helper.Content.Load<T>("assets/Maps/FarmMaps/Farm_Foraging.tbin");
-        }
+            else if (!replaceFarm_Foraging && asset.AssetNameEquals("Maps/Farm_Foraging"))
+                return this.Helper.Content.Load<T>("assets/Map/FarmMaps/Farm_Foraging.tbin");
 
-        private void GameLaunched(object sender, GameLaunchedEventArgs e)
-        {
+            else
+                return this.Helper.Content.Load<T>("assets/Maps/FarmMaps/Farm_Combat.tbin");
         }
 
         private void DayStarted(object sender, DayStartedEventArgs e)
@@ -130,20 +133,25 @@ namespace BeyondTheValley
         {
             _copperAxeTiles = this.Helper.Data.ReadSaveData<CopperAxeDeletedTiles>("CopperAxe.DeletedTiles") ?? new CopperAxeDeletedTiles();
 
-            if (_copperAxeTiles.inputArgs == null)
-                return;
-
-            foreach(string input in _copperAxeTiles.inputArgs)
+            if (_copperAxeTiles.inputArgs != null)
             {
-                string[] arg = input.Split(' ').ToArray();
+                foreach (string input in _copperAxeTiles.inputArgs)
+                {
+                    string[] arg = input.Split(' ').ToArray();
 
-                int tileX = int.Parse(arg[0]);
-                int tileY = int.Parse(arg[1]);
-                string strLayer = arg[2];
-                string previousGameLocation = arg[3];
+                    int tileX = int.Parse(arg[0]);
+                    int tileY = int.Parse(arg[1]);
+                    string strLayer = arg[2];
+                    string previousGameLocation = arg[3];
 
-                Game1.getLocationFromName(previousGameLocation).removeTile(tileX, tileY, strLayer); 
+                    Game1.getLocationFromName(previousGameLocation).removeTile(tileX, tileY, strLayer);
+                }
             }
+        }
+
+        private void ModMessageReceived(object sender, ModMessageReceivedEventArgs e)
+        {
+
         }
 
         public void ButtonPressed(object sender, ButtonPressedEventArgs e)
@@ -177,20 +185,32 @@ namespace BeyondTheValley
 
                                 foreach (string[] arg in arguments.Split('/').Select(item => item.Split(' ')))
                                 {
-                                    /// check if a parsing error happened
+                                    // check if a parsing error happened
                                     bool parseError = false;
 
-                                    int tileX = int.Parse(arg[0]); // get tile's X coordinate
-                                    int tileY = int.Parse(arg[1]); // get tile's Y coordinate
-                                    string strLayer = arg[2]; // get tile's layer
-                                    string currentGameLocation = Game1.player.currentLocation.Name;
+                                    if (!int.TryParse(arg[0], out int tileX)) // get tile's X coordinate
+                                    {
+                                        parseError = true;
+                                        this.Monitor.Log("[Action CopperAxe] Error parsing first argument as an integer", LogLevel.Error);
+                                        continue;
+                                    }
 
-                                    // all possible values of {strLayer}
-                                    string[] layerValues = new string[] { "Back", "Buildings", "Front", "AlwaysFront" };
+                                    if (!int.TryParse(arg[1], out int tileY)) // get tile's Y coordinate
+                                    {
+                                        parseError = true;
+                                        this.Monitor.Log("[Action CopperAxe] Error parsing second argument as an integer", LogLevel.Error);
+                                        continue;
+                                    }
+
+                                    string strLayer = arg[2]; // get tile's layer
+
+                                    string currentGameLocation = Game1.player.currentLocation.Name; // get current location's string
+
+                                    //if specified layer does not exist
                                     if (!layerValues.Contains(strLayer))
                                     {
                                         parseError = true;
-                                        this.Monitor.Log($"The specified layer(\"{strLayer}\") for 'Action CopperAxe' is not valid. Eligible values: \"Back, Buildings, Front, AlwaysFront\". The TileAction will not work", LogLevel.Error);
+                                        this.Monitor.Log($"The specified layer(\"{strLayer}\") for 'Action CopperAxe' is not valid. Eligible values: \"{layerValues}\". The TileAction will not work", LogLevel.Error);
                                     }
 
                                     // success state
@@ -199,9 +219,12 @@ namespace BeyondTheValley
                                     {
                                         Game1.player.currentLocation.removeTile(tileX, tileY, strLayer);
 
+                                        // write deleted file data to save files
                                         this.Helper.Data.WriteSaveData("CopperAxe.DeletedTiles", _copperAxeTiles);
                                         _copperAxeTiles.inputArgs.Add(Convert.ToString(tileX) + " " + Convert.ToString(tileY) + " " + strLayer + " " + currentGameLocation);
 
+                                        this.Helper.Multiplayer.SendMessage(_copperAxeTiles.inputArgs, "CopperAxeTiles");
+                                        Game1.drawObjectDialogue("Success");
                                         this.Monitor.Log($"Action CopperAxe, removed the tile on [{tileX}, {tileY}] from the {strLayer} Layer", LogLevel.Trace);
                                     }
                                 }
@@ -215,6 +238,25 @@ namespace BeyondTheValley
                         // does not have axe equipped
                         else
                             Game1.drawObjectDialogue("It seems like I can interact with this if my axe is equipped");
+                    }
+                }
+
+                /* Action | Iridium Axe (coordX) (coordY) (strLayer) */
+                /// <summary> If interacted with your Iridium axe(+) equipped, it will remove the following tiles on that layer, separate with '/' delimiter </summary>
+                /// unfinished
+                if (tileAction.StartsWith("Iridium Axe" ))
+                {
+                    if (Game1.player.CurrentTool is Axe)
+                    {
+                        if (Game1.player.CurrentTool.UpgradeLevel >= 4)
+                        {
+                            string arguments = String.Join(" ", tileAction.Split(' ').Skip(1));
+
+                            foreach (string[] arg in arguments.Split('/').Select(item => item.Split(' ')))
+                            {
+                                // todo
+                            }
+                        }
                     }
                 }
             }
