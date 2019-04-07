@@ -15,7 +15,6 @@ using System.IO;
 using BeyondTheValley.Framework;
 using BeyondTheValley.Framework.Actions;
 using StardewValley.Tools;
-using System.Runtime.Remoting.Messaging;
 
 namespace BeyondTheValley
 {
@@ -30,10 +29,14 @@ namespace BeyondTheValley
         public GameLocation Farm_Foraging = Game1.getLocationFromName("Farm_Foraging");
 
         /* other */
-        /// <summary> CopperAxeDeletedTiles model </summary>
-        private CopperAxeDeletedTiles _copperAxeTiles;
+        private bool tileRemoved;
 
-        private string[] layerValues =  { "Back, Buildings, Front, AlwaysFront" };
+        /// <summary> CopperAxeDeletedTiles model </summary>
+        private SaveDeletedTilesModel _saveDeletedTiles;
+        /// <summary> Retrieve multiplayer message of deleted tiles </summary>
+        private List<string> mpInputArgs = new List<string>();
+
+        private string[] layerValues =  { "Back", "Buildings", "Front", "AlwaysFront" };
 
         public override void Entry(IModHelper helper)
         {
@@ -64,8 +67,8 @@ namespace BeyondTheValley
             //--------------------------------------//
 
             /* Helper Events */
-            helper.Events.GameLoop.DayStarted += this.DayStarted;
             helper.Events.GameLoop.SaveLoaded += this.SaveLoaded;
+            helper.Events.GameLoop.UpdateTicked += this.UpdateTicked;
             helper.Events.Multiplayer.ModMessageReceived += this.ModMessageReceived;
             helper.Events.Input.ButtonPressed += this.ButtonPressed;
         }
@@ -73,85 +76,79 @@ namespace BeyondTheValley
         public bool CanLoad<T>(IAssetInfo asset)
         {
             // Standard Farm/Farm
-            if (asset.AssetNameEquals("Maps/Farm"))
+            if (asset.AssetNameEquals(@"Maps/Farm"))
                 return true;
 
-            // Forest Farm/Farm_Foraging
-            else if (asset.AssetNameEquals("Maps/Farm_Foraging"))
-                return true;
 
-            // Cindersap Forest
-            else
-                return asset.AssetNameEquals("Maps/Farm_Combat");
+            throw new FileNotFoundException();
         }
 
         public T Load<T>(IAssetInfo asset)
         {
             //Standard Farm/Farm
             if (!replaceFarm && asset.AssetNameEquals("Maps/Farm"))
-                return this.Helper.Content.Load<T>("assets/Maps/FarmMaps/Farm.tbin");
+                return this.Helper.Content.Load<T>(@"assets/Maps/FarmMaps/Farm.tbin");
 
             else if (!replaceFarm_Foraging && asset.AssetNameEquals("Maps/Farm_Foraging"))
-                return this.Helper.Content.Load<T>("assets/Map/FarmMaps/Farm_Foraging.tbin");
+                return this.Helper.Content.Load<T>(@"assets/Map/FarmMaps/Farm_Foraging.tbin");
 
             else
-                return this.Helper.Content.Load<T>("assets/Maps/FarmMaps/Farm_Combat.tbin");
-        }
-
-        private void DayStarted(object sender, DayStartedEventArgs e)
-        {
-            if (!Context.IsWorldReady)
-                return;
-
-            if (!replaceFarm_Foraging)
-            {
-                if (Game1.player.mailReceived.Contains("ccVault"))
-                {
-                    //--------------Farm_Foraging----------------//
-                    /// <summary> removes north fences on Forest Farm </summary>
-                    Layer Farm_Foraging_Front = Farm_Foraging.map.GetLayer("Buildings");
-                    TileSheet spring_outdoorsTileSheet = Farm_Foraging.map.GetTileSheet("untitled tile sheet");
-
-                    Farm_Foraging.removeTile(61, 50, "Front");
-                    Farm_Foraging.removeTile(62, 50, "Front");
-                    Farm_Foraging.removeTile(61, 51, "Buildings");
-                    Farm_Foraging.removeTile(62, 51, "Buildings");
-
-                    for (int TileY = 53; TileY < 90; TileY++)
-                    {
-                        Farm_Foraging.removeTile(44, TileY, "Buildings");
-                        Farm_Foraging.removeTile(44, TileY, "Front");
-                    }
-
-                    Farm_Foraging_Front.Tiles[44, 88] = new StaticTile(Farm_Foraging_Front, spring_outdoorsTileSheet, BlendMode.Alpha, tileIndex: 358);
-                    //-------------------------------------------//
-                }
-            }
+                return this.Helper.Content.Load<T>(@"assets/Maps/FarmMaps/Farm_Combat.tbin");
         }
 
         private void SaveLoaded(object sender, SaveLoadedEventArgs e)
         {
-            _copperAxeTiles = this.Helper.Data.ReadSaveData<CopperAxeDeletedTiles>("CopperAxe.DeletedTiles") ?? new CopperAxeDeletedTiles();
+            _saveDeletedTiles = this.Helper.Data.ReadSaveData<SaveDeletedTilesModel>("CopperAxe.DeletedTiles") ?? new SaveDeletedTilesModel();
 
-            if (_copperAxeTiles.inputArgs != null)
+            // if there are any tiles needed to be deleted
+            if (_saveDeletedTiles.inputArgs != null)
             {
-                foreach (string input in _copperAxeTiles.inputArgs)
+                foreach (string input in _saveDeletedTiles.inputArgs)
                 {
                     string[] arg = input.Split(' ').ToArray();
 
+                    // parse all info to remove tile
                     int tileX = int.Parse(arg[0]);
                     int tileY = int.Parse(arg[1]);
                     string strLayer = arg[2];
                     string previousGameLocation = arg[3];
 
+                    // remove tile
                     Game1.getLocationFromName(previousGameLocation).removeTile(tileX, tileY, strLayer);
                 }
             }
         }
 
+        private void UpdateTicked(object sender, UpdateTickedEventArgs e)
+        {
+            if (tileRemoved == true)
+            {
+                foreach (string input in mpInputArgs)
+                {
+                    string[] arg = input.Split(' ').ToArray();
+
+                    // parse all
+                    int tileX = int.Parse(arg[0]);
+                    int tileY = int.Parse(arg[1]);
+                    string strLayer = arg[2];
+                    string previousGameLocation = arg[3];
+
+                    // remove tile
+                    Game1.getLocationFromName(previousGameLocation).removeTile(tileX, tileY, strLayer);
+                    this.Monitor.Log($"Action CopperAxe from host, removed the tile on [{tileX}, {tileY}] from the {strLayer} Layer", LogLevel.Trace);
+                }
+
+                tileRemoved = false;
+            }
+        }
+
         private void ModMessageReceived(object sender, ModMessageReceivedEventArgs e)
         {
-
+            // read list
+            if (e.FromModID == "Jessebot.BeyondTheValley" && e.Type == "DeletedTiles")
+            {
+                mpInputArgs = e.ReadAs<List<string>>();
+            }
         }
 
         public void ButtonPressed(object sender, ButtonPressedEventArgs e)
@@ -183,51 +180,8 @@ namespace BeyondTheValley
                                 // skips first word (CopperAxe)
                                 string arguments = String.Join(" ", tileAction.Split(' ').Skip(1));
 
-                                foreach (string[] arg in arguments.Split('/').Select(item => item.Split(' ')))
-                                {
-                                    // check if a parsing error happened
-                                    bool parseError = false;
-
-                                    if (!int.TryParse(arg[0], out int tileX)) // get tile's X coordinate
-                                    {
-                                        parseError = true;
-                                        this.Monitor.Log("[Action CopperAxe] Error parsing first argument as an integer", LogLevel.Error);
-                                        continue;
-                                    }
-
-                                    if (!int.TryParse(arg[1], out int tileY)) // get tile's Y coordinate
-                                    {
-                                        parseError = true;
-                                        this.Monitor.Log("[Action CopperAxe] Error parsing second argument as an integer", LogLevel.Error);
-                                        continue;
-                                    }
-
-                                    string strLayer = arg[2]; // get tile's layer
-
-                                    string currentGameLocation = Game1.player.currentLocation.Name; // get current location's string
-
-                                    //if specified layer does not exist
-                                    if (!layerValues.Contains(strLayer))
-                                    {
-                                        parseError = true;
-                                        this.Monitor.Log($"The specified layer(\"{strLayer}\") for 'Action CopperAxe' is not valid. Eligible values: \"{layerValues}\". The TileAction will not work", LogLevel.Error);
-                                    }
-
-                                    // success state
-                                    // only if no parsing error exists
-                                    else if (!parseError)
-                                    {
-                                        Game1.player.currentLocation.removeTile(tileX, tileY, strLayer);
-
-                                        // write deleted file data to save files
-                                        this.Helper.Data.WriteSaveData("CopperAxe.DeletedTiles", _copperAxeTiles);
-                                        _copperAxeTiles.inputArgs.Add(Convert.ToString(tileX) + " " + Convert.ToString(tileY) + " " + strLayer + " " + currentGameLocation);
-
-                                        this.Helper.Multiplayer.SendMessage(_copperAxeTiles.inputArgs, "CopperAxeTiles");
-                                        Game1.drawObjectDialogue("Success");
-                                        this.Monitor.Log($"Action CopperAxe, removed the tile on [{tileX}, {tileY}] from the {strLayer} Layer", LogLevel.Trace);
-                                    }
-                                }
+                                // perform deleting tiles
+                                this.DeletedTilesAction(arguments);
                             }
 
                             // does not have copper axe or better
@@ -244,20 +198,79 @@ namespace BeyondTheValley
                 /* Action | Iridium Axe (coordX) (coordY) (strLayer) */
                 /// <summary> If interacted with your Iridium axe(+) equipped, it will remove the following tiles on that layer, separate with '/' delimiter </summary>
                 /// unfinished
-                if (tileAction.StartsWith("Iridium Axe" ))
+                if (tileAction.StartsWith("IridiumAxe "))
                 {
                     if (Game1.player.CurrentTool is Axe)
                     {
+                        /* --- iridium axe or better required --- */
                         if (Game1.player.CurrentTool.UpgradeLevel >= 4)
                         {
+                            // skips first word (IridiumAxe)
                             string arguments = String.Join(" ", tileAction.Split(' ').Skip(1));
 
-                            foreach (string[] arg in arguments.Split('/').Select(item => item.Split(' ')))
-                            {
-                                // todo
-                            }
+                            // perform deleting tiles
+                            this.DeletedTilesAction(arguments);
                         }
                     }
+
+                    else
+                        Game1.drawObjectDialogue("It seems like I can interact with this if my axe is equipped");
+                }
+            }
+        }
+
+        private void DeletedTilesAction(string arguments)
+        {
+            foreach (string[] arg in arguments.Split('/').Select(item => item.Split(' ')))
+            {
+                // check if a parsing error happened
+                bool parseError = false;
+
+                if (!int.TryParse(arg[0], out int tileX)) // get tile's X coordinate
+                {
+                    parseError = true;
+                    this.Monitor.Log("[Action CopperAxe] Error parsing first argument as an integer", LogLevel.Error);
+                    continue;
+                }
+
+                if (!int.TryParse(arg[1], out int tileY)) // get tile's Y coordinate
+                {
+                    parseError = true;
+                    this.Monitor.Log("[Action CopperAxe] Error parsing second argument as an integer", LogLevel.Error);
+                    continue;
+                }
+
+                string strLayer = arg[2]; // get tile's layer
+
+                string currentGameLocation = Game1.player.currentLocation.Name; // get current location's string
+
+                //if specified layer does not exist
+                if (!layerValues.Contains(strLayer))
+                {
+                    string value = string.Join(", ", layerValues);
+
+                    parseError = true;
+                    this.Monitor.Log($"The specified layer(\"{strLayer}\") for 'Action CopperAxe' is not valid. Eligible values: \"{layerValues}\". The TileAction will not work", LogLevel.Error);
+                }
+
+                // success state
+                // only if no parsing error exists
+                else if (!parseError)
+                {
+                    Game1.player.currentLocation.removeTile(tileX, tileY, strLayer);
+
+                    // write deleted file data to save files
+                    this.Helper.Data.WriteSaveData("CopperAxe.DeletedTiles", _saveDeletedTiles);
+                    _saveDeletedTiles.inputArgs.Add(Convert.ToString(tileX) + " " + Convert.ToString(tileY) + " " + strLayer + " " + currentGameLocation);
+
+                    // send multiplayer message
+                    this.Helper.Multiplayer.SendMessage(_saveDeletedTiles.inputArgs, "DeletedTiles");
+
+                    Game1.drawObjectDialogue("Success");
+                    this.Monitor.Log($"Action CopperAxe, removed the tile on [{tileX}, {tileY}] from the {strLayer} Layer", LogLevel.Trace);
+
+                    // check if tile was removed bool
+                    tileRemoved = true;
                 }
             }
         }

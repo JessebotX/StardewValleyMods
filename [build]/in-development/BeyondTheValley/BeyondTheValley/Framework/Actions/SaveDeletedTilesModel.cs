@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BeyondTheValley.Framework.Actions
 {
-    class CopperAxeDeletedTiles
+    class SaveDeletedTilesModel
     {
         public List<string> inputArgs = new List<string>();
     }

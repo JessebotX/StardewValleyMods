@@ -43,8 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Framework\Actions\CopperAxeDeletedTiles.cs" />
-    <Compile Include="Framework\Actions\CopperAxeMultiplayerModel.cs" />
+    <Compile Include="Framework\Actions\SaveDeletedTilesModel.cs" />
     <Compile Include="Framework\ContentPackModel.cs" />
     <Compile Include="Framework\ReplaceFileModel.cs" />
     <Compile Include="ModEntry.cs" />
