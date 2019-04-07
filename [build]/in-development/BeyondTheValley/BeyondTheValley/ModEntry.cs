@@ -87,13 +87,13 @@ namespace BeyondTheValley
         {
             //Standard Farm/Farm
             if (!replaceFarm && asset.AssetNameEquals("Maps/Farm"))
-                return this.Helper.Content.Load<T>(@"assets/Maps/FarmMaps/Farm.tbin");
+                return this.Helper.Content.Load<T>("assets/Maps/FarmMaps/Farm.tbin");
 
             else if (!replaceFarm_Foraging && asset.AssetNameEquals("Maps/Farm_Foraging"))
-                return this.Helper.Content.Load<T>(@"assets/Map/FarmMaps/Farm_Foraging.tbin");
+                return this.Helper.Content.Load<T>("assets/Map/FarmMaps/Farm_Foraging.tbin");
 
             else
-                return this.Helper.Content.Load<T>(@"assets/Maps/FarmMaps/Farm_Combat.tbin");
+                return this.Helper.Content.Load<T>("assets/Maps/FarmMaps/Farm_Combat.tbin");
         }
 
         private void SaveLoaded(object sender, SaveLoadedEventArgs e)
@@ -121,6 +121,11 @@ namespace BeyondTheValley
 
         private void UpdateTicked(object sender, UpdateTickedEventArgs e)
         {
+            if (!Context.IsWorldReady)
+                return;
+
+            /********************
+            Mult*/
             if (tileRemoved == true)
             {
                 foreach (string input in mpInputArgs)
@@ -195,7 +200,7 @@ namespace BeyondTheValley
                     }
                 }
 
-                /* Action | Iridium Axe (coordX) (coordY) (strLayer) */
+                /* Action | IridiumAxe (coordX) (coordY) (strLayer) */
                 /// <summary> If interacted with your Iridium axe(+) equipped, it will remove the following tiles on that layer, separate with '/' delimiter </summary>
                 /// unfinished
                 if (tileAction.StartsWith("IridiumAxe "))
@@ -211,8 +216,12 @@ namespace BeyondTheValley
                             // perform deleting tiles
                             this.DeletedTilesAction(arguments);
                         }
+
+                        else
+                            Game1.drawObjectDialogue("It seems like I'll need a better axe first");
                     }
 
+                    // does not have axe equipped
                     else
                         Game1.drawObjectDialogue("It seems like I can interact with this if my axe is equipped");
                 }
