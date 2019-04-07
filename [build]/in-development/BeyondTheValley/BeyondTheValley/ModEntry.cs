@@ -76,11 +76,13 @@ namespace BeyondTheValley
         public bool CanLoad<T>(IAssetInfo asset)
         {
             // Standard Farm/Farm
-            if (asset.AssetNameEquals(@"Maps/Farm"))
+            if (asset.AssetNameEquals("Maps/Farm"))
                 return true;
 
+            if (asset.AssetNameEquals("Maps/Farm_Combat"))
+                return true;
 
-            throw new FileNotFoundException();
+            throw new NotSupportedException($"Unexpected asset '{asset.AssetName}'.");
         }
 
         public T Load<T>(IAssetInfo asset)
@@ -124,8 +126,7 @@ namespace BeyondTheValley
             if (!Context.IsWorldReady)
                 return;
 
-            /********************
-            Mult*/
+            /* --- (Multiplayer) sync deleted tiles from tile actions --- */
             if (tileRemoved == true)
             {
                 foreach (string input in mpInputArgs)
@@ -161,9 +162,9 @@ namespace BeyondTheValley
             if (!Context.IsWorldReady)
                 return;
 
-            /********************** 
-             **Custom Tile Actions 
-             **********************/
+            /************************* 
+             ** Custom Tile Actions ** 
+             *************************/
             if (e.Button.IsActionButton())
             {
                 // grabs player's cursor xy coords
@@ -200,9 +201,14 @@ namespace BeyondTheValley
                     }
                 }
 
+                /* Action | Steel Axe
+                 * 
+                 * 
+                 * (coordX) (coordY) (strLayer) */
+                /// <summary> If interacted with your Steel axe(+) equipped, it will remove the following tiles on that layer, separate with '/' delimiter </summary>
+
                 /* Action | IridiumAxe (coordX) (coordY) (strLayer) */
                 /// <summary> If interacted with your Iridium axe(+) equipped, it will remove the following tiles on that layer, separate with '/' delimiter </summary>
-                /// unfinished
                 if (tileAction.StartsWith("IridiumAxe "))
                 {
                     if (Game1.player.CurrentTool is Axe)
@@ -217,6 +223,7 @@ namespace BeyondTheValley
                             this.DeletedTilesAction(arguments);
                         }
 
+                        // does not have iridium axe
                         else
                             Game1.drawObjectDialogue("It seems like I'll need a better axe first");
                     }
