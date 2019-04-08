@@ -8,6 +8,7 @@ using StardewModdingAPI;
 using Microsoft.Xna.Framework;
 using StardewModdingAPI.Framework;
 using StardewModdingAPI.Events;
+using StardewModdingAPI.Utilities;
 using xTile;
 using xTile.Layers;
 using xTile.Tiles;
@@ -33,6 +34,8 @@ namespace BeyondTheValley
 
         /// <summary> CopperAxeDeletedTiles model </summary>
         private SaveDeletedTilesModel _saveDeletedTiles;
+        /// <summary> JSON data model</summary>
+        private DataModel _dataModel;
         /// <summary> Retrieve multiplayer message of deleted tiles </summary>
         private List<string> mpInputArgs = new List<string>();
 
@@ -59,7 +62,7 @@ namespace BeyondTheValley
                     /// <summary> If content pack replaces Farm/Standard Farm </summary>
                     if (contentPackEdit.ReplaceFile == "assets/Maps/FarmMaps/Farm.tbin")
                         replaceFarm = true;
-                    /// <summary> If content pack
+                    /// <summary> If content pack replaces Farm_Combat/Wilderness Farm </summary>
                     if (contentPackEdit.ReplaceFile == "assets/Maps/FarmMaps/Farm_Foraging.tbin")
                         replaceFarm_Foraging = true;
                 }
@@ -73,6 +76,7 @@ namespace BeyondTheValley
             helper.Events.Input.ButtonPressed += this.ButtonPressed;
         }
 
+        /* --- Content API stuff --- */
         public bool CanLoad<T>(IAssetInfo asset)
         {
             // Standard Farm/Farm
@@ -97,6 +101,7 @@ namespace BeyondTheValley
             else
                 return this.Helper.Content.Load<T>("assets/Maps/FarmMaps/Farm_Combat.tbin");
         }
+        /* ------------------------- */
 
         private void SaveLoaded(object sender, SaveLoadedEventArgs e)
         {
@@ -119,6 +124,10 @@ namespace BeyondTheValley
                     Game1.getLocationFromName(previousGameLocation).removeTile(tileX, tileY, strLayer);
                 }
             }
+
+            // get current language code
+            var language = LocalizedContentManager.CurrentLanguageCode;
+            _dataModel = this.Helper.Data.ReadJsonFile<DataModel>($"Data/misc-{language}.json");
         }
 
         private void UpdateTicked(object sender, UpdateTickedEventArgs e)
@@ -127,7 +136,7 @@ namespace BeyondTheValley
                 return;
 
             /* --- (Multiplayer) sync deleted tiles from tile actions --- */
-            if (tileRemoved == true)
+            if (tileRemoved == true && !Context.IsMainPlayer)
             {
                 foreach (string input in mpInputArgs)
                 {
@@ -201,10 +210,7 @@ namespace BeyondTheValley
                     }
                 }
 
-                /* Action | Steel Axe
-                 * 
-                 * 
-                 * (coordX) (coordY) (strLayer) */
+                /* Action | Steel Axe (coordX) (coordY) (strLayer) */
                 /// <summary> If interacted with your Steel axe(+) equipped, it will remove the following tiles on that layer, separate with '/' delimiter </summary>
 
                 /* Action | IridiumAxe (coordX) (coordY) (strLayer) */
@@ -276,8 +282,11 @@ namespace BeyondTheValley
                     Game1.player.currentLocation.removeTile(tileX, tileY, strLayer);
 
                     // write deleted file data to save files
-                    this.Helper.Data.WriteSaveData("CopperAxe.DeletedTiles", _saveDeletedTiles);
-                    _saveDeletedTiles.inputArgs.Add(Convert.ToString(tileX) + " " + Convert.ToString(tileY) + " " + strLayer + " " + currentGameLocation);
+                    if (Context.IsMainPlayer)
+                    {
+                        this.Helper.Data.WriteSaveData("CopperAxe.DeletedTiles", _saveDeletedTiles);
+                        _saveDeletedTiles.inputArgs.Add(Convert.ToString(tileX) + " " + Convert.ToString(tileY) + " " + strLayer + " " + currentGameLocation);
+                    }
 
                     // send multiplayer message
                     this.Helper.Multiplayer.SendMessage(_saveDeletedTiles.inputArgs, "DeletedTiles");

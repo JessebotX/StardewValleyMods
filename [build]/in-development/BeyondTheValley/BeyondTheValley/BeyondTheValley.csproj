@@ -45,6 +45,7 @@
   <ItemGroup>
     <Compile Include="Framework\Actions\SaveDeletedTilesModel.cs" />
     <Compile Include="Framework\ContentPackModel.cs" />
+    <Compile Include="Framework\DataModel.cs" />
     <Compile Include="Framework\ReplaceFileModel.cs" />
     <Compile Include="ModEntry.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
