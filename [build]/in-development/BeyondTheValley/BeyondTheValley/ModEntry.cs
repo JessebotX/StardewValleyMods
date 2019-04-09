@@ -52,10 +52,11 @@ namespace BeyondTheValley
         *********/
         public override void Entry(IModHelper helper)
         {
+            this.i18n = helper.Translation;
+
             /* --------- Content Packs ------------ */
             foreach (IContentPack contentPack in this.Helper.ContentPacks.GetOwned())
-            {
-                i18n = helper.Translation;
+            { 
 
                 bool contentFileExists = File.Exists(Path.Combine(contentPack.DirectoryPath, "content.json"));
 
