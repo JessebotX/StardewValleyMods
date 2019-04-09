@@ -45,16 +45,18 @@
   <ItemGroup>
     <Compile Include="Framework\Actions\SaveDeletedTilesModel.cs" />
     <Compile Include="Framework\ContentPackModel.cs" />
-    <Compile Include="Framework\DataModel.cs" />
     <Compile Include="Framework\ReplaceFileModel.cs" />
     <Compile Include="ModEntry.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="assets\Data\misc-en.json">
+    <None Include="assets\Maps\FarmMaps\Farm.tbin">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="assets\Maps\FarmMaps\Farm_Combat.tbin">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="i18n\default.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="manifest.json" />
