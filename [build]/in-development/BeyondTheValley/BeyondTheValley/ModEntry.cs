@@ -365,11 +365,17 @@ namespace BeyondTheValley
             /* --- Axe Deleted Tiles --- */
             /// <summary> Axe is not equipped </summary>
             if (axeNotEquipped)
+            {
                 Game1.drawObjectDialogue(i18n.Get("tileaction-axe.1"));
+                axeNotEquipped = false;
+            }
 
             /// <summary> Axe is under leveled/does not meet requirement </summary>
             if (axeUnderLeveled)
+            {
                 Game1.drawObjectDialogue(i18n.Get("tileaction-axe.2"));
+                axeUnderLeveled = false;
+            }
         } 
     }
 }
