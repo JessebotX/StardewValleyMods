@@ -28,27 +28,23 @@ namespace BeyondTheValley
 
         /* content pack replacement */
         /// <summary> content pack replaces Farm </summary>
-        public bool replaceFarm = false;
+        private bool replaceFarm = false;
         /// <summary> content pack replaces Farm </summary>
-        public bool replaceFarm_Foraging = false;
+        private bool replaceFarm_Foraging = false;
 
         /* other */
         private bool tileRemoved;
+        private bool axeNotEquipped;
+        private bool axeUnderLeveled;
         /// <summary> All layer values accepted </summary>
         private string[] layerValues = { "Back", "Buildings", "Front", "AlwaysFront" };
         /// <summary> How many Content Packs are installed </summary>
         private int contentPacksInstalled;
 
-        private bool axeNotEquipped = false;
-        private bool axeUnderLeveled = false;
-
         /// <summary> CopperAxeDeletedTiles model </summary>
         private SaveDeletedTilesModel _saveDeletedTiles;
         /// <summary> Retrieve multiplayer message of deleted tiles </summary>
         private List<string> mpInputArgs = new List<string>();
-
-
-        
 
         /*********
         ** Entry
@@ -57,37 +53,8 @@ namespace BeyondTheValley
         {
             this.i18n = helper.Translation;
 
-            /* --------- Content Packs ------------ */
-            foreach (IContentPack contentPack in this.Helper.ContentPacks.GetOwned())
-            {
-                // bool for if content.json exists
-                bool contentFileExists = File.Exists(Path.Combine(contentPack.DirectoryPath, "content.json"));
-
-                ContentPackModel cPack = contentPack.ReadJsonFile<ContentPackModel>("content.json");
-                this.Monitor.Log($"Reading: {contentPack.Manifest.Name} {contentPack.Manifest.Version} by {contentPack.Manifest.Author} from {contentPack.DirectoryPath} (ID: {contentPack.Manifest.UniqueID})", LogLevel.Trace);
-
-                // if content.json does not exists
-                if (!contentFileExists)
-                    this.Monitor.Log($"{contentPack.Manifest.Name}({contentPack.Manifest.Version}) by {contentPack.Manifest.Author} is missing a content.json file. Mod will be ignored", LogLevel.Warn);
-
-                // if content.json exists
-                else if (contentFileExists)
-                    contentPacksInstalled += 1;
-
-                foreach (ReplaceFileModel contentPackEdit in cPack.ReplaceFiles)
-                {
-                    this.Monitor.Log($"Replacing {contentPackEdit.ReplaceFile} with {contentPackEdit.FromFile}", LogLevel.Trace);
-
-                    /* Check if content pack replaces one of the following files */
-                    /// <summary> If content pack replaces Farm/Standard Farm </summary>
-                    if (contentPackEdit.ReplaceFile == "assets/Maps/FarmMaps/Farm.tbin")
-                        replaceFarm = true;
-                    /// <summary> If content pack replaces Farm_Combat/Wilderness Farm </summary>
-                    if (contentPackEdit.ReplaceFile == "assets/Maps/FarmMaps/Farm_Foraging.tbin")
-                        replaceFarm_Foraging = true;
-                }
-            }
-            //--------------------------------------//
+            /* other methods */
+            ContentPackData();
 
             /* Helper Events */
             helper.Events.GameLoop.SaveLoaded += this.SaveLoaded;
@@ -99,6 +66,52 @@ namespace BeyondTheValley
         /*********
         ** Content API crap
         *********/
+
+        private void ContentPackData()
+        {
+            foreach (IContentPack contentPack in this.Helper.ContentPacks.GetOwned())
+            {
+                // bool for if content.json exists
+                bool contentFileExists = File.Exists(Path.Combine(contentPack.DirectoryPath, "content.json"));
+
+                //read content packs
+                ContentPackModel pack = contentPack.ReadJsonFile<ContentPackModel>("content.json");
+                this.Monitor.Log($"Reading: {contentPack.Manifest.Name} {contentPack.Manifest.Version} by {contentPack.Manifest.Author} from {contentPack.DirectoryPath} (ID: {contentPack.Manifest.UniqueID})", LogLevel.Trace);
+
+                // if content.json does not exists
+                if (!contentFileExists)
+                    this.Monitor.Log($"{contentPack.Manifest.Name}({contentPack.Manifest.Version}) by {contentPack.Manifest.Author} is missing a content.json file. Mod will be ignored", LogLevel.Warn);
+
+                // if content.json exists
+                else if (contentFileExists)
+                    contentPacksInstalled += 1;
+
+                foreach (BVEEditModel edit in pack.ReplaceFiles)
+                {
+                    this.Monitor.Log($"Replacing {edit.ReplaceFile} with {edit.FromFile}", LogLevel.Trace);
+                    /* Check if content pack replaces one of the following files */
+                    /// <summary> 
+                    /// If content pack replaces Farm/Standard Farm 
+                    /// </summary>
+                    if (edit.ReplaceFile == "assets/Maps/FarmMaps/Farm.tbin")
+                    {
+                        contentPack.LoadAsset<Map>(edit.FromFile);
+                        replaceFarm = true;
+                        continue;
+                    }
+
+                    /// <summary> 
+                    /// If content pack replaces Farm_Combat/Wilderness Farm 
+                    /// </summary>
+                    if (edit.ReplaceFile == "assets/Maps/FarmMaps/Farm_Foraging.tbin")
+                    {
+                        contentPack.LoadAsset<Map>(edit.FromFile);
+                        replaceFarm_Foraging = true;
+                        continue;
+                    }
+                }
+            }
+        }
 
         public bool CanLoad<T>(IAssetInfo asset)
         {
@@ -207,8 +220,8 @@ namespace BeyondTheValley
                     // --- General Tile Actions ---
                     // ----------------------------
 
-                    /* Action | BVEMessage (strMessage) */
                     /// <summary> 
+                    /// Action | BVEMessage (strMessage)
                     /// If interacted, prints out a message from the i18n key 
                     /// </summary>
                     if (tileAction.StartsWith("BVEMessage "))
@@ -225,8 +238,8 @@ namespace BeyondTheValley
                     // --- Delete Tiles Actions --- 
                     // ---------------------------- 
 
-                    /* Action | BVECopperAxe (coordX) (coordY) (strLayer) */
                     /// <summary>
+                    /// Action | BVECopperAxe (coordX) (coordY) (strLayer)
                     /// If interacted with your Copper axe(+) equipped, it will remove the following tiles on that layer, separate with '/' delimiter 
                     /// </summary>
                     if (tileAction.StartsWith("BVECopperAxe "))
@@ -264,8 +277,8 @@ namespace BeyondTheValley
                     }
                 }
 
-                /* Action | BVESteel Axe (coordX) (coordY) (strLayer) */
                 /// <summary> 
+                /// Action | BVESteel Axe (coordX) (coordY) (strLayer
                 /// If interacted with your Steel axe(+) equipped, it will remove the following tiles on that layer, separate with '/' delimiter 
                 /// </summary>
                 if (tileAction.StartsWith("BVESteelAxe "))
@@ -302,8 +315,8 @@ namespace BeyondTheValley
                     }
                 }
 
-                /* Action | BVEGold Axe (coordX) (coordY) (strLayer) */
                 /// <summary> 
+                /// Action | BVEGold Axe (coordX) (coordY) (strLayer)
                 /// If interacted with your Gold axe(+) equipped, it will remove the following tiles on that layer, separate with '/' delimiter 
                 /// </summary>
                 if (tileAction.StartsWith("BVEGoldAxe "))
@@ -340,8 +353,8 @@ namespace BeyondTheValley
                     }
                 }
 
-                /* Action | BVEIridiumAxe (coordX) (coordY) (strLayer) */
                 /// <summary> 
+                /// Action | BVEIridiumAxe (coordX) (coordY) (strLayer)
                 /// If interacted with your Iridium axe(+) equipped, it will remove the following tiles on that layer, separate with '/' delimiter 
                 /// </summary>
                 if (tileAction.StartsWith("BVEIridiumAxe "))
@@ -411,7 +424,7 @@ namespace BeyondTheValley
                     string value = string.Join(", ", layerValues);
 
                     parseError = true;
-                    this.Monitor.Log($"The specified layer(\"{strLayer}\") for a [Action {currentAction}] is not valid. Eligible values: \"{layerValues}\". The TileAction will not work", LogLevel.Error);
+                    this.Monitor.Log($"The specified layer(\"{strLayer}\") for a [Action {currentAction}] is not valid. Eligible values: \"{value}\". The TileAction will not work", LogLevel.Error);
                 }
 
                 // success state
@@ -426,7 +439,7 @@ namespace BeyondTheValley
 
                     // send multiplayer message
                     this.Helper.Multiplayer.SendMessage(_saveDeletedTiles.inputArgs, "DeletedTiles");
-                    Game1.drawObjectDialogue(i18n.Get("tileaction-success"));
+                    Game1.drawObjectDialogue(i18n.Get("tileaction-success.1"));
                     this.Monitor.Log($"[Action {currentAction}] removed the tile on [{tileX}, {tileY}] from the {strLayer} Layer", LogLevel.Trace);
 
                     // check if tile was removed bool

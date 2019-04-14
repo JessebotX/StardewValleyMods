@@ -4,6 +4,7 @@
 	*********/
 	
 	/* Delete Tiles TileActions */
+	/* ------------------------ */
 	// --- General --- \\
 	"tileaction-success.1": "Successfully destroyed tiles",
 	// --- Axe Specific --- \\
