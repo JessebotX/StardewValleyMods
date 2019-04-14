@@ -36,6 +36,7 @@ namespace BeyondTheValley
         private bool tileRemoved;
         private bool axeNotEquipped;
         private bool axeUnderLeveled;
+
         /// <summary> All layer values accepted </summary>
         private string[] layerValues = { "Back", "Buildings", "Front", "AlwaysFront" };
         /// <summary> How many Content Packs are installed </summary>
