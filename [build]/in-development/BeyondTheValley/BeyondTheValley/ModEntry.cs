@@ -218,8 +218,7 @@ namespace BeyondTheValley
 
                 if (tileAction != null)
                 {
-                    // --- General Tile Actions ---
-                    // ----------------------------
+                    // --- General Tile Actions --- \\
 
                     /// <summary> 
                     /// Action | BVEMessage (strMessage)
@@ -236,8 +235,7 @@ namespace BeyondTheValley
                         Game1.drawObjectDialogue(strMessage);
                     }
 
-                    // --- Delete Tiles Actions --- 
-                    // ---------------------------- 
+                    // --- Delete Tiles Actions --- \\
 
                     /// <summary>
                     /// Action | BVECopperAxe (coordX) (coordY) (strLayer)
@@ -277,7 +275,6 @@ namespace BeyondTheValley
                         }
                     }
                 }
-
                 /// <summary> 
                 /// Action | BVESteel Axe (coordX) (coordY) (strLayer
                 /// If interacted with your Steel axe(+) equipped, it will remove the following tiles on that layer, separate with '/' delimiter 
@@ -315,7 +312,6 @@ namespace BeyondTheValley
                         FailedTileActionState();
                     }
                 }
-
                 /// <summary> 
                 /// Action | BVEGold Axe (coordX) (coordY) (strLayer)
                 /// If interacted with your Gold axe(+) equipped, it will remove the following tiles on that layer, separate with '/' delimiter 
@@ -353,7 +349,6 @@ namespace BeyondTheValley
                         FailedTileActionState();
                     }
                 }
-
                 /// <summary> 
                 /// Action | BVEIridiumAxe (coordX) (coordY) (strLayer)
                 /// If interacted with your Iridium axe(+) equipped, it will remove the following tiles on that layer, separate with '/' delimiter 
