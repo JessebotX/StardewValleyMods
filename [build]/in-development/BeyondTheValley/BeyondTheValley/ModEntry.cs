@@ -27,6 +27,8 @@ namespace BeyondTheValley
         public ITranslationHelper i18n;
 
         /* content pack replacement */
+        private Map replacement;
+
         /// <summary> content pack replaces Farm </summary>
         private bool replaceFarm = false;
         /// <summary> content pack replaces Farm </summary>
@@ -96,7 +98,7 @@ namespace BeyondTheValley
                     /// </summary>
                     if (edit.ReplaceFile == "assets/Maps/FarmMaps/Farm.tbin")
                     {
-                        contentPack.LoadAsset<Map>(edit.FromFile);
+                        replacement = contentPack.LoadAsset<Map>(edit.FromFile);
                         replaceFarm = true;
                         continue;
                     }
