@@ -25,7 +25,7 @@ namespace BeyondTheValley.Framework.Actions
          ** Fields
          *********/
         internal IModHelper helper;
-        internal IMonitor Monitor;
+        internal IMonitor monitor;
         internal ITranslationHelper i18n;
 
         public bool tileRemoved;
@@ -40,6 +40,17 @@ namespace BeyondTheValley.Framework.Actions
 
         /// <summary> Retrieve multiplayer message of deleted tiles </summary>
         public List<string> mpInputArgs = new List<string>();
+
+        /*********
+         ** Constructor
+         *********/
+        public ModConstructor()
+        {
+            this.helper = Helper;
+            this.i18n = helper.Translation;
+            this.monitor = monitor;
+            
+        }
 
         public void PickaxeDeleteTilesAction(string tileAction, string currentAction, int toolUpgradeLevel)
         {
@@ -70,6 +81,7 @@ namespace BeyondTheValley.Framework.Actions
                 FailedTileActionState();
             }
         }
+
         public void AxeDeleteTilesAction(string tileAction, string currentAction, int toolUpgradeLevel)
         {
             if (Game1.player.CurrentTool is Axe)
