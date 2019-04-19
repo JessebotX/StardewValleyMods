@@ -116,6 +116,9 @@ namespace BeyondTheValley
             if (asset.AssetNameEquals("Maps/Farm"))
                 return true;
 
+            if (asset.AssetNameEquals("Maps/Farm_Foraging"))
+                return true;
+
             if (asset.AssetNameEquals("Maps/Farm_Combat"))
                 return true;
 
@@ -139,7 +142,11 @@ namespace BeyondTheValley
             else if (replaceFarm_Foraging && asset.AssetNameEquals("Maps/Farm_Foraging"))
                 return (T)(object)editFarm_Foraging;
 
-            throw new NotSupportedException($"Unexpected asset '{asset.AssetName}'.");
+            if (asset.AssetNameEquals("Maps/Farm_Combat"))
+                return this.Helper.Content.Load<T>("assets/Maps/FarmMaps/Farm_Combat.tbin");
+
+            else
+                throw new NotSupportedException($"Unexpected asset '{asset.AssetName}'.");
         }
 
         // ---------------------------- \\
