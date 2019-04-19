@@ -27,17 +27,23 @@ namespace BeyondTheValley
         public ITranslationHelper i18n;
 
         /* content pack replacement */
-        private Map replacement;
+        private Map editFarm;
+        private Map editFarm_Foraging;
 
+        // content pack bools
         /// <summary> content pack replaces Farm </summary>
-        private bool replaceFarm = false;
+        private bool replaceFarm;
         /// <summary> content pack replaces Farm </summary>
-        private bool replaceFarm_Foraging = false;
+        private bool replaceFarm_Foraging;
 
         /* other */
         private bool tileRemoved;
+        // check failed tile action attempts
         private bool axeNotEquipped;
         private bool axeUnderLeveled;
+
+        private bool pickaxeNotEquipped;
+        private bool pickaxeUnderLeveled;
 
         /// <summary> All layer values accepted </summary>
         private string[] layerValues = { "Back", "Buildings", "Front", "AlwaysFront" };
@@ -65,10 +71,6 @@ namespace BeyondTheValley
             helper.Events.Multiplayer.ModMessageReceived += this.ModMessageReceived;
             helper.Events.Input.ButtonPressed += this.ButtonPressed;
         }
-
-        /*********
-        ** Content API crap
-        *********/
 
         private void ContentPackData()
         {
@@ -98,7 +100,7 @@ namespace BeyondTheValley
                     /// </summary>
                     if (edit.ReplaceFile == "assets/Maps/FarmMaps/Farm.tbin")
                     {
-                        replacement = contentPack.LoadAsset<Map>(edit.FromFile);
+                        editFarm = contentPack.LoadAsset<Map>(edit.FromFile);
                         replaceFarm = true;
                         continue;
                     }
@@ -108,7 +110,7 @@ namespace BeyondTheValley
                     /// </summary>
                     if (edit.ReplaceFile == "assets/Maps/FarmMaps/Farm_Foraging.tbin")
                     {
-                        contentPack.LoadAsset<Map>(edit.FromFile);
+                        editFarm_Foraging = contentPack.LoadAsset<Map>(edit.FromFile);
                         replaceFarm_Foraging = true;
                         continue;
                     }
@@ -116,6 +118,9 @@ namespace BeyondTheValley
             }
         }
 
+        /*********
+        ** Content API crap
+        *********/
         public bool CanLoad<T>(IAssetInfo asset)
         {
             // Standard Farm/Farm
@@ -131,13 +136,24 @@ namespace BeyondTheValley
 
         public T Load<T>(IAssetInfo asset)
         {
-            //Standard Farm/Farm
+            // Standard Farm/Farm
             if (!replaceFarm && asset.AssetNameEquals("Maps/Farm"))
                 return this.Helper.Content.Load<T>("assets/Maps/FarmMaps/Farm.tbin");
 
-            else
-                return this.Helper.Content.Load<T>("assets/Maps/FarmMaps/Farm_Combat.tbin");
+            else if (replaceFarm && asset.AssetNameEquals("Maps/Farm"))
+                return (T)(object)editFarm;
+
+            // Forest Farm/Farm_Foraging
+            if (!replaceFarm_Foraging && asset.AssetNameEquals("Maps/Farm_Foraging"))
+                return this.Helper.Content.Load<T>("assets/Maps/FarmMaps/Farm_Foraging.tbin");
+
+            else if (replaceFarm_Foraging && asset.AssetNameEquals("Maps/Farm_Foraging"))
+                return (T)(object)editFarm_Foraging;
+
+            throw new NotSupportedException($"Unexpected asset '{asset.AssetName}'.");
         }
+
+        // ---------------------------- \\
 
         private void SaveLoaded(object sender, SaveLoadedEventArgs e)
         {
@@ -230,7 +246,7 @@ namespace BeyondTheValley
                     {
                         string[] input = tileAction.Split(' ').Skip(1).ToArray();
 
-                        // get's strMessage
+                        //get i18n key
                         string strMessage = i18n.Get(input[0]);
 
                         //print's message out
@@ -239,6 +255,46 @@ namespace BeyondTheValley
 
                     // --- Delete Tiles Actions --- \\
 
+                    // pickaxe
+                    /// <summary>
+                    /// Action | BVECopperAxe (coordX) (coordY) (strLayer)
+                    /// If interacted with your Copper axe(+) equipped, it will remove the following tiles on that layer, separate with '/' delimiter 
+                    /// </summary>
+                    if (tileAction.StartsWith("BVECopperPickaxe "))
+                    {
+                        // process to get the first word in the current tile action
+                        string[] fullString = tileAction.Split(' ').ToArray();
+                        string currentAction = fullString[0];
+
+                        if (Game1.player.CurrentTool is Pickaxe)
+                        {
+                            /* --- copper axe or better required --- */
+                            if (Game1.player.CurrentTool.UpgradeLevel >= 1)
+                            {
+                                // skips first word (CopperAxe)
+                                string arguments = string.Join(" ", tileAction.Split(' ').Skip(1));
+
+                                // perform deleting tiles
+                                DeletedTilesAction(arguments, currentAction);
+                            }
+
+                            // does not have copper axe or better
+                            else
+                            {
+                                pickaxeUnderLeveled = true;
+                                FailedTileActionState();
+                            }
+                        }
+
+                        // does not have axe equipped
+                        else
+                        {
+                            pickaxeNotEquipped = true;
+                            FailedTileActionState();
+                        }
+                    }
+
+                    //axe
                     /// <summary>
                     /// Action | BVECopperAxe (coordX) (coordY) (strLayer)
                     /// If interacted with your Copper axe(+) equipped, it will remove the following tiles on that layer, separate with '/' delimiter 
@@ -248,7 +304,7 @@ namespace BeyondTheValley
                         // process to get the first word in the current tile action
                         string[] fullString = tileAction.Split(' ').ToArray();
                         string currentAction = fullString[0];
-                            
+
                         if (Game1.player.CurrentTool is Axe)
                         {
                             /* --- copper axe or better required --- */
@@ -276,121 +332,122 @@ namespace BeyondTheValley
                             FailedTileActionState();
                         }
                     }
-                }
-                /// <summary> 
-                /// Action | BVESteel Axe (coordX) (coordY) (strLayer
-                /// If interacted with your Steel axe(+) equipped, it will remove the following tiles on that layer, separate with '/' delimiter 
-                /// </summary>
-                if (tileAction.StartsWith("BVESteelAxe "))
-                {
-                    // process to get the first word in the current tile action
-                    string[] fullString = tileAction.Split(' ').ToArray();
-                    string currentAction = fullString[0];
 
-                    if (Game1.player.CurrentTool is Axe)
+                    /// <summary> 
+                    /// Action | BVESteel Axe (coordX) (coordY) (strLayer
+                    /// If interacted with your Steel axe(+) equipped, it will remove the following tiles on that layer, separate with '/' delimiter 
+                    /// </summary>
+                    if (tileAction.StartsWith("BVESteelAxe "))
                     {
-                        /* --- steel axe or better required --- */
-                        if (Game1.player.CurrentTool.UpgradeLevel >= 2)
-                        {
-                            // skips first word (SteelAxe)
-                            string arguments = string.Join(" ", tileAction.Split(' ').Skip(1));
+                        // process to get the first word in the current tile action
+                        string[] fullString = tileAction.Split(' ').ToArray();
+                        string currentAction = fullString[0];
 
-                            // perform deleting tiles
-                            DeletedTilesAction(arguments, currentAction);
+                        if (Game1.player.CurrentTool is Axe)
+                        {
+                            /* --- steel axe or better required --- */
+                            if (Game1.player.CurrentTool.UpgradeLevel >= 2)
+                            {
+                                // skips first word (SteelAxe)
+                                string arguments = string.Join(" ", tileAction.Split(' ').Skip(1));
+
+                                // perform deleting tiles
+                                DeletedTilesAction(arguments, currentAction);
+                            }
+
+                            // does not have steel axe
+                            else
+                            {
+                                axeUnderLeveled = true;
+                                FailedTileActionState();
+                            }
                         }
 
-                        // does not have steel axe
+                        // does not have axe equipped
                         else
                         {
-                            axeUnderLeveled = true;
+                            axeNotEquipped = true;
                             FailedTileActionState();
                         }
                     }
-
-                    // does not have axe equipped
-                    else
+                    /// <summary> 
+                    /// Action | BVEGold Axe (coordX) (coordY) (strLayer)
+                    /// If interacted with your Gold axe(+) equipped, it will remove the following tiles on that layer, separate with '/' delimiter 
+                    /// </summary>
+                    if (tileAction.StartsWith("BVEGoldAxe "))
                     {
-                        axeNotEquipped = true;
-                        FailedTileActionState();
-                    }
-                }
-                /// <summary> 
-                /// Action | BVEGold Axe (coordX) (coordY) (strLayer)
-                /// If interacted with your Gold axe(+) equipped, it will remove the following tiles on that layer, separate with '/' delimiter 
-                /// </summary>
-                if (tileAction.StartsWith("BVEGoldAxe "))
-                {
-                    // process to get the first word in the current tile action
-                    string[] fullString = tileAction.Split(' ').ToArray();
-                    string currentAction = fullString[0];
+                        // process to get the first word in the current tile action
+                        string[] fullString = tileAction.Split(' ').ToArray();
+                        string currentAction = fullString[0];
 
-                    if (Game1.player.CurrentTool is Axe)
-                    {
-                        /* --- steel axe or better required --- */
-                        if (Game1.player.CurrentTool.UpgradeLevel >= 2)
+                        if (Game1.player.CurrentTool is Axe)
                         {
-                            // skips first word (SteelAxe)
-                            string arguments = string.Join(" ", tileAction.Split(' ').Skip(1));
+                            /* --- steel axe or better required --- */
+                            if (Game1.player.CurrentTool.UpgradeLevel >= 2)
+                            {
+                                // skips first word (SteelAxe)
+                                string arguments = string.Join(" ", tileAction.Split(' ').Skip(1));
 
-                            // perform deleting tiles
-                            DeletedTilesAction(arguments, currentAction);
+                                // perform deleting tiles
+                                DeletedTilesAction(arguments, currentAction);
+                            }
+
+                            // does not have steel axe
+                            else
+                            {
+                                axeUnderLeveled = true;
+                                FailedTileActionState();
+                            }
                         }
 
-                        // does not have steel axe
+                        // does not have axe equipped
                         else
                         {
-                            axeUnderLeveled = true;
+                            axeNotEquipped = true;
                             FailedTileActionState();
                         }
                     }
-
-                    // does not have axe equipped
-                    else
+                    /// <summary> 
+                    /// Action | BVEIridiumAxe (coordX) (coordY) (strLayer)
+                    /// If interacted with your Iridium axe(+) equipped, it will remove the following tiles on that layer, separate with '/' delimiter 
+                    /// </summary>
+                    if (tileAction.StartsWith("BVEIridiumAxe "))
                     {
-                        axeNotEquipped = true;
-                        FailedTileActionState();
-                    }
-                }
-                /// <summary> 
-                /// Action | BVEIridiumAxe (coordX) (coordY) (strLayer)
-                /// If interacted with your Iridium axe(+) equipped, it will remove the following tiles on that layer, separate with '/' delimiter 
-                /// </summary>
-                if (tileAction.StartsWith("BVEIridiumAxe "))
-                { 
-                    // process to get the first word in the current tile action
-                    string[] fullString = tileAction.Split(' ').ToArray();
-                    string currentAction = fullString[0];
+                        // process to get the first word in the current tile action
+                        string[] fullString = tileAction.Split(' ').ToArray();
+                        string currentAction = fullString[0];
 
-                    if (Game1.player.CurrentTool is Axe)
-                    {
-                        /* --- iridium axe or better required --- */
-                        if (Game1.player.CurrentTool.UpgradeLevel >= 4)
+                        if (Game1.player.CurrentTool is Axe)
                         {
-                            // skips first word (IridiumAxe)
-                            string arguments = String.Join(" ", tileAction.Split(' ').Skip(1));
+                            /* --- iridium axe or better required --- */
+                            if (Game1.player.CurrentTool.UpgradeLevel >= 4)
+                            {
+                                // skips first word (IridiumAxe)
+                                string arguments = String.Join(" ", tileAction.Split(' ').Skip(1));
 
-                            // perform deleting tiles
-                            DeletedTilesAction(arguments, currentAction);
+                                // perform deleting tiles
+                                DeletedTilesAction(arguments, currentAction);
+                            }
+
+                            // does not have iridium axe
+                            else
+                            {
+                                axeUnderLeveled = true;
+                                FailedTileActionState();
+                            }
                         }
 
-                        // does not have iridium axe
+                        // does not have axe equipped
                         else
                         {
-                            axeUnderLeveled = true;
+                            axeNotEquipped = true;
                             FailedTileActionState();
                         }
-                    }
-
-                    // does not have axe equipped
-                    else
-                    {
-                        axeNotEquipped = true;
-                        FailedTileActionState();
                     }
                 }
             }
         }
-
+        
         private void DeletedTilesAction(string arguments, string currentAction)
         {
             foreach (string[] arg in arguments.Split('/').Select(item => item.Split(' ')))
@@ -461,6 +518,20 @@ namespace BeyondTheValley
             {
                 Game1.drawObjectDialogue(i18n.Get("tileaction-axe.2"));
                 axeUnderLeveled = false;
+            }
+
+            /// <summary> Pickaxe is not equipped</summary>
+            if (pickaxeNotEquipped)
+            {
+                Game1.drawObjectDialogue(i18n.Get("tileaction-pickaxe.1"));
+                pickaxeNotEquipped = false;
+            }
+
+            /// <summary> Pickaxe is under leveled/does not meet requirement </summary>
+            if (pickaxeUnderLeveled)
+            {
+                Game1.drawObjectDialogue(i18n.Get("tileaction-pickaxe.2"));
+                pickaxeUnderLeveled = false;
             }
         } 
     }
