@@ -24,8 +24,8 @@ namespace BeyondTheValley.Framework.Actions
         /*********
          ** Fields
          *********/
-        internal IModHelper helper;
-        internal IMonitor monitor;
+        internal IModHelper Helper;
+        internal IMonitor Monitor;
         internal ITranslationHelper i18n;
 
         public bool tileRemoved;
@@ -44,12 +44,11 @@ namespace BeyondTheValley.Framework.Actions
         /*********
          ** Constructor
          *********/
-        public ModConstructor()
+        public TileActionFramework(IModHelper helper, IMonitor monitor)
         {
-            this.helper = Helper;
+            this.Helper = helper;
+            this.Monitor = monitor;
             this.i18n = helper.Translation;
-            this.monitor = monitor;
-            
         }
 
         public void PickaxeDeleteTilesAction(string tileAction, string currentAction, int toolUpgradeLevel)

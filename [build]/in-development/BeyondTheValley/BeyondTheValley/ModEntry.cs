@@ -25,10 +25,8 @@ namespace BeyondTheValley
         ** Fields
         *********/
         /// <summary> 'helper.Translation' becomes 'i18n' </summary>
-        public ITranslationHelper i18n;
-
-        /// <summary> Create Instance of TileActionFramework class <see cref="TileActionFramework"/> </summary>
-        public TileActionFramework TileActionFramework = new TileActionFramework();
+        private ITranslationHelper i18n;
+        private TileActionFramework TileActionFramework;
 
         /* content pack replacement */
         private Map editFarm;
@@ -50,6 +48,9 @@ namespace BeyondTheValley
         public override void Entry(IModHelper helper)
         {
             this.i18n = helper.Translation;
+
+            /// <summary> Create Instance of TileActionFramework class <see cref="TileActionFramework"/> </summary>
+            TileActionFramework = new TileActionFramework(helper, Monitor);
 
             /* other methods */
             ContentPackData();
