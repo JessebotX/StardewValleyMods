@@ -47,9 +47,10 @@ namespace BeyondTheValley
         *********/
         public override void Entry(IModHelper helper)
         {
+            // set 'i18n' as 'helper.Translation'
             this.i18n = helper.Translation;
 
-            /// <summary> Create Instance of TileActionFramework class <see cref="TileActionFramework"/> </summary>
+            /// <summary> create instance of TileActionFramework class <see cref="TileActionFramework"/> </summary>
             TileActionFramework = new TileActionFramework(helper, Monitor);
 
             /* other methods */

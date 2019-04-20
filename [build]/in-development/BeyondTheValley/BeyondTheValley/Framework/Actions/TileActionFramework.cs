@@ -152,11 +152,11 @@ namespace BeyondTheValley.Framework.Actions
                     Game1.player.currentLocation.removeTile(tileX, tileY, strLayer);
 
                     // write deleted file data to save files
-                    helper.Data.WriteSaveData("DeletedTiles", _saveDeletedTiles);
+                    Helper.Data.WriteSaveData("DeletedTiles", _saveDeletedTiles);
                     _saveDeletedTiles.inputArgs.Add(Convert.ToString(tileX) + " " + Convert.ToString(tileY) + " " + strLayer + " " + currentGameLocation);
 
                     // send multiplayer message
-                    helper.Multiplayer.SendMessage(_saveDeletedTiles.inputArgs, "DeletedTiles");
+                    Helper.Multiplayer.SendMessage(_saveDeletedTiles.inputArgs, "DeletedTiles");
                     Game1.drawObjectDialogue(i18n.Get("tileaction-success.1"));
                     this.Monitor.Log($"[Action {currentAction}] removed the tile on [{tileX}, {tileY}] from the {strLayer} Layer", LogLevel.Trace);
 
@@ -200,7 +200,7 @@ namespace BeyondTheValley.Framework.Actions
 
         public void SaveDeleteTilesAction()
         {
-            _saveDeletedTiles = helper.Data.ReadSaveData<SaveDeletedTilesModel>("DeletedTiles") ?? new SaveDeletedTilesModel();
+            _saveDeletedTiles = Helper.Data.ReadSaveData<SaveDeletedTilesModel>("DeletedTiles") ?? new SaveDeletedTilesModel();
 
             // if there are any tiles needed to be deleted
             if (_saveDeletedTiles.inputArgs != null)
