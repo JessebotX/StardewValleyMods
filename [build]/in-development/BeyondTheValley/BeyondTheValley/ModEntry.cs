@@ -15,6 +15,7 @@ using xTile.Tiles;
 using System.IO;
 using BeyondTheValley.Framework;
 using BeyondTheValley.Framework.Actions;
+using BeyondTheValley.Framework.ContentPacks;
 using StardewValley.Tools;
 
 namespace BeyondTheValley
@@ -28,15 +29,8 @@ namespace BeyondTheValley
         private ITranslationHelper i18n;
         private TileActionFramework TileActionFramework;
 
-        /* content pack replacement */
-        private Map editFarm;
-        private Map editFarm_Foraging;
-
-        // content pack bools
-        /// <summary> content pack replaces Farm </summary>
-        private bool replaceFarm;
-        /// <summary> content pack replaces Farm </summary>
-        private bool replaceFarm_Foraging;
+        /// <summary> create instance of AvailableContentPackEdits class that contains available assets to edit <see cref="AvailableContentPackEdits"/></summary>
+        private AvailableContentPackEdits cpAsset = new AvailableContentPackEdits();
 
         /* other */
         /// <summary> How many Content Packs are installed </summary>
@@ -61,6 +55,10 @@ namespace BeyondTheValley
             helper.Events.GameLoop.UpdateTicked += this.UpdateTicked;
             helper.Events.Multiplayer.ModMessageReceived += this.ModMessageReceived;
             helper.Events.Input.ButtonPressed += this.ButtonPressed;
+
+            /* Console Commands */
+            helper.ConsoleCommands.Add("bve_purgesavedeletedtiles", "Removes the deleted tiles on a map from the Delete Tile Actions " +
+                "\n\n Best used when you are changing maps mid save (and that map has the Delete Tile Actions)", this.ConsoleCommands_PurgeSaveDeletedTiles);
         }
 
         private void ContentPackData()
@@ -85,25 +83,29 @@ namespace BeyondTheValley
                 foreach (BVEEditModel edit in pack.ReplaceFiles)
                 {
                     this.Monitor.Log($"Replacing {edit.ReplaceFile} with {edit.FromFile}", LogLevel.Trace);
-                    /* Check if content pack replaces one of the following files */
-                    /// <summary> 
-                    /// If content pack replaces Farm/Standard Farm 
-                    /// </summary>
-                    if (edit.ReplaceFile == "assets/Maps/FarmMaps/Farm.tbin")
-                    {
-                        editFarm = contentPack.LoadAsset<Map>(edit.FromFile);
-                        replaceFarm = true;
-                        continue;
-                    }
 
-                    /// <summary> 
-                    /// If content pack replaces Farm_Combat/Wilderness Farm 
-                    /// </summary>
-                    if (edit.ReplaceFile == "assets/Maps/FarmMaps/Farm_Foraging.tbin")
+                    switch(edit.ReplaceFile)
                     {
-                        editFarm_Foraging = contentPack.LoadAsset<Map>(edit.FromFile);
-                        replaceFarm_Foraging = true;
-                        continue;
+                        // Standard Farm/Farm
+                        case "assets/Maps/FarmMaps/Farm.tbin":
+                            cpAsset.editFarm = contentPack.LoadAsset<Map>(edit.FromFile);
+                            cpAsset.replaceFarm = true;
+                            continue;
+                        // Farm_Combat/Wilderness Farm
+                        case "assets/Maps/FarmMaps/Farm_Combat.tbin":
+                            cpAsset.editFarm_Combat = contentPack.LoadAsset<Map>(edit.FromFile);
+                            cpAsset.replaceFarm_Combat = true;
+                            continue;
+                        // Farm_Foraging/Forest Farm
+                        case "assets/Maps/FarmMaps/Farm_Foraging.tbin":
+                            cpAsset.editFarm_Foraging = contentPack.LoadAsset<Map>(edit.FromFile);
+                            cpAsset.replaceFarm_Foraging = true;
+                            continue;
+                        default:
+                            this.Monitor.Log(
+                                $"[Content Pack:{contentPack.Manifest.Name} {contentPack.Manifest.Version}] Failed to replace \"{edit.ReplaceFile}\" because it does not exist and/or is not supported.", 
+                                LogLevel.Error);
+                            continue;
                     }
                 }
             }
@@ -131,18 +133,18 @@ namespace BeyondTheValley
         public T Load<T>(IAssetInfo asset)
         {
             // Standard Farm/Farm
-            if (!replaceFarm && asset.AssetNameEquals("Maps/Farm"))
+            if (!cpAsset.replaceFarm && asset.AssetNameEquals("Maps/Farm"))
                 return this.Helper.Content.Load<T>("assets/Maps/FarmMaps/Farm.tbin");
 
-            else if (replaceFarm && asset.AssetNameEquals("Maps/Farm"))
-                return (T)(object)editFarm;
+            else if (cpAsset.replaceFarm && asset.AssetNameEquals("Maps/Farm"))
+                return (T)(object)cpAsset.editFarm;
 
             // Forest Farm/Farm_Foraging
-            if (!replaceFarm_Foraging && asset.AssetNameEquals("Maps/Farm_Foraging"))
+            if (!cpAsset.replaceFarm_Foraging && asset.AssetNameEquals("Maps/Farm_Foraging"))
                 return this.Helper.Content.Load<T>("assets/Maps/FarmMaps/Farm_Foraging.tbin");
 
-            else if (replaceFarm_Foraging && asset.AssetNameEquals("Maps/Farm_Foraging"))
-                return (T)(object)editFarm_Foraging;
+            else if (cpAsset.replaceFarm_Foraging && asset.AssetNameEquals("Maps/Farm_Foraging"))
+                return (T)(object)cpAsset.editFarm_Foraging;
 
             if (asset.AssetNameEquals("Maps/Farm_Combat"))
                 return this.Helper.Content.Load<T>("assets/Maps/FarmMaps/Farm_Combat.tbin");
@@ -152,6 +154,10 @@ namespace BeyondTheValley
         }
 
         // ---------------------------- \\
+
+        /*********
+         ** Helper Methods crap
+         *********/ 
 
         private void SaveLoaded(object sender, SaveLoadedEventArgs e)
         {
@@ -340,6 +346,20 @@ namespace BeyondTheValley
                     }
                 }
             }
+        }
+
+        /*********
+         ** Console Commands crap
+         *********/
+        /// <summary>
+        /// Command: 'bve_purgesavedeletedtiles'
+        /// Removes the saves deleted tiles.
+        /// </summary>
+        /// <param name="command">The name of the command invoked.</param>
+        /// <param name="args">The arguments received by the command. Each word after the command name is a separate argument.</param>
+        private void ConsoleCommands_PurgeSaveDeletedTiles(string command, string[] args)
+        {
+
         }
     }
 }

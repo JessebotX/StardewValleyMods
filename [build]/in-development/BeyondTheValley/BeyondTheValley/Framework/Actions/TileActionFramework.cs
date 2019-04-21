@@ -151,7 +151,7 @@ namespace BeyondTheValley.Framework.Actions
                 {
                     Game1.player.currentLocation.removeTile(tileX, tileY, strLayer);
 
-                    // write deleted file data to save files
+                    // write deleted tile data to save files
                     Helper.Data.WriteSaveData("DeletedTiles", _saveDeletedTiles);
                     _saveDeletedTiles.inputArgs.Add(Convert.ToString(tileX) + " " + Convert.ToString(tileY) + " " + strLayer + " " + currentGameLocation);
 
@@ -237,6 +237,12 @@ namespace BeyondTheValley.Framework.Actions
                 Game1.getLocationFromName(previousGameLocation).removeTile(tileX, tileY, strLayer);
                 this.Monitor.Log($"Action CopperAxe from host, removed the tile on [{tileX}, {tileY}] from the {strLayer} Layer", LogLevel.Trace);
             }
+        }
+
+        public void PurgeSaveDeletedTiles()
+        {
+            _saveDeletedTiles.inputArgs.Clear();
+            Helper.Data.WriteSaveData("DeletedTiles", _saveDeletedTiles);
         }
     }
 }
