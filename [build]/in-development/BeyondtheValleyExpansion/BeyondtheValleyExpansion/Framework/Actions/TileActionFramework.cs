@@ -24,18 +24,25 @@ namespace BeyondTheValleyExpansion.Framework.Actions
         /*********
          ** Fields
          *********/
+        /// <summary> provides simplified API's for writing mods </summary>
         internal IModHelper Helper;
+        /// <summary> encapsulates monitoring and logging for a given module </summary>
         internal IMonitor Monitor;
+        /// <summary> provides translations stored in the mods i18n folder </summary>
         internal ITranslationHelper i18n;
 
+        /// <summary> check if a tile has been recently deleted from the custom tile actions </summary>
         public bool tileRemoved;
-
+        /// <summary> check if axe is currently equipped </summary>
         public bool axeNotEquipped;
+        /// <summary> check if axe is under the minimum requirement </summary>
         public bool axeUnderLeveled;
-
+        /// <summary> check if pickaxe is currently equipped </summary>
         public bool pickaxeNotEquipped;
+        /// <summary> check if pickaxe is under the minimum requirement </summary>
         public bool pickaxeUnderLeveled;
 
+        /// <summary> references the <see cref="SaveDeletedTilesModel"/> class</summary>
         private SaveDeletedTilesModel _saveDeletedTiles;
 
         /// <summary> Retrieve multiplayer message of deleted tiles </summary>
@@ -44,6 +51,9 @@ namespace BeyondTheValleyExpansion.Framework.Actions
         /*********
          ** Constructor
          *********/
+        /// <summary> constructor that allows <see cref="TileActionFramework"/> to access <seealso cref="IModHelper"/>, <seealso cref="IMonitor"/> and <seealso cref="ITranslationHelper"/> </summary>
+        /// <param name="helper"> provides simplified API's for writing mods </param>
+        /// <param name="monitor"> encapsulates monitoring and logging for a given module </param>
         public TileActionFramework(IModHelper helper, IMonitor monitor)
         {
             this.Helper = helper;
@@ -51,6 +61,10 @@ namespace BeyondTheValleyExpansion.Framework.Actions
             this.i18n = helper.Translation;
         }
 
+        /// <summary> trigger's the deleting tiles tileactions that require a pickaxe equipped </summary>
+        /// <param name="tileAction"> the custom tile action string </param>
+        /// <param name="currentAction"> the current action that evoked this method </param>
+        /// <param name="toolUpgradeLevel"> the upgrade level of the current pickaxe </param>
         public void PickaxeDeleteTilesAction(string tileAction, string currentAction, int toolUpgradeLevel)
         {
             if (Game1.player.CurrentTool is Pickaxe)
@@ -81,6 +95,10 @@ namespace BeyondTheValleyExpansion.Framework.Actions
             }
         }
 
+        /// <summary> trigger's the deleting tiles tileactions that require an axe equipped </summary>
+        /// <param name="tileAction"> the custom tile action string </param>
+        /// <param name="currentAction"> the current action that evoked this method </param>
+        /// <param name="toolUpgradeLevel"> the upgrade level of the current axe </param>
         public void AxeDeleteTilesAction(string tileAction, string currentAction, int toolUpgradeLevel)
         {
             if (Game1.player.CurrentTool is Axe)
@@ -111,6 +129,9 @@ namespace BeyondTheValleyExpansion.Framework.Actions
             }
         }
 
+        /// <summary> performs the tile deleting and saves it in <see cref="SaveDeletedTilesModel.inputArgs"/> that gets written in save files </summary>
+        /// <param name="arguments"> the arguments in the tile action string </param>
+        /// <param name="currentAction"> the current action that evoked this method </param>
         private void DeleteTilesAction(string arguments, string currentAction)
         {
             foreach (string[] arg in arguments.Split('/').Select(item => item.Split(' ')))
@@ -137,9 +158,9 @@ namespace BeyondTheValleyExpansion.Framework.Actions
                 string currentGameLocation = Game1.player.currentLocation.Name; // get current location's string
 
                 //if specified layer does not exist
-                if (!Misc.layerValues.Contains(strLayer))
+                if (!StaticFarmFields.layerValues.Contains(strLayer))
                 {
-                    string value = string.Join(", ", Misc.layerValues);
+                    string value = string.Join(", ", StaticFarmFields.layerValues);
 
                     parseError = true;
                     this.Monitor.Log($"The specified layer(\"{strLayer}\") for a [Action {currentAction}] is not valid. Eligible values: \"{value}\". The TileAction will not work", LogLevel.Error);
@@ -166,31 +187,32 @@ namespace BeyondTheValleyExpansion.Framework.Actions
             }
         }
 
+        /// <summary> when the deleting tile's tile action that is interacted fails because it doesn't meet the requirements </summary>
         public void FailedTileActionState()
         {
             /* --- Axe Deleted Tiles --- */
-            /// <summary> Axe is not equipped </summary>
+            // Axe is not equipped
             if (axeNotEquipped)
             {
                 Game1.drawObjectDialogue(i18n.Get("tileaction-axe.1"));
                 axeNotEquipped = false;
             }
 
-            /// <summary> Axe is under leveled/does not meet requirement </summary>
+            // Axe is under leveled/does not meet requirement 
             if (axeUnderLeveled)
             {
                 Game1.drawObjectDialogue(i18n.Get("tileaction-axe.2"));
                 axeUnderLeveled = false;
             }
 
-            /// <summary> Pickaxe is not equipped</summary>
+            // Pickaxe is not equipped
             if (pickaxeNotEquipped)
             {
                 Game1.drawObjectDialogue(i18n.Get("tileaction-pickaxe.1"));
                 pickaxeNotEquipped = false;
             }
 
-            /// <summary> Pickaxe is under leveled/does not meet requirement </summary>
+            // Pickaxe is under leveled/does not meet requirement
             if (pickaxeUnderLeveled)
             {
                 Game1.drawObjectDialogue(i18n.Get("tileaction-pickaxe.2"));
@@ -198,6 +220,7 @@ namespace BeyondTheValleyExpansion.Framework.Actions
             }
         }
 
+        /// <summary> deletes the saved deleted tiles on the location from <see cref="SaveDeletedTilesModel.inputArgs"/></summary>
         public void SaveDeleteTilesAction()
         {
             _saveDeletedTiles = Helper.Data.ReadSaveData<SaveDeletedTilesModel>("DeletedTiles") ?? new SaveDeletedTilesModel();
@@ -221,6 +244,7 @@ namespace BeyondTheValleyExpansion.Framework.Actions
             }
         }
 
+        /// <summary> updates the deleted tiles when in multiplayer </summary>
         public void MultiplayerDeleteTilesAction()
         {
             foreach (string input in mpInputArgs)
@@ -239,10 +263,14 @@ namespace BeyondTheValleyExpansion.Framework.Actions
             }
         }
 
+        /// <summary> evokes when console command 'bve_purgesavedeletedtiles' is used, clearing out <see cref="SaveDeletedTilesModel.inputArgs"/></summary>
         public void PurgeSaveDeletedTiles()
         {
             _saveDeletedTiles.inputArgs.Clear();
             Helper.Data.WriteSaveData("DeletedTiles", _saveDeletedTiles);
+
+            // update for multiplayer
+            tileRemoved = true;
         }
     }
 }

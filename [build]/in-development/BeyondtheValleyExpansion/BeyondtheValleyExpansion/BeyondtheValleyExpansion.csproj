@@ -49,7 +49,9 @@
     <Compile Include="Framework\ContentPacks\AvailableContentPackEdits.cs" />
     <Compile Include="Framework\ContentPacks\BVEEditModel.cs" />
     <Compile Include="Framework\ContentPacks\ContentPackModel.cs" />
-    <Compile Include="Framework\Misc.cs" />
+    <Compile Include="Framework\FarmResources.cs" />
+    <Compile Include="Framework\StaticFarmFields.cs" />
+    <Compile Include="Framework\StaticFileFields.cs" />
     <Compile Include="Framework\TilesheetCompatibility.cs" />
     <Compile Include="ModEntry.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
