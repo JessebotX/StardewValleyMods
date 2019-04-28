@@ -17,10 +17,11 @@ using xTile.Tiles;
 using BeyondTheValleyExpansion.Framework;
 using BeyondTheValleyExpansion.Framework.Actions;
 using BeyondTheValleyExpansion.Framework.ContentPacks;
+using StardewValley.TerrainFeatures;
 
 namespace BeyondTheValleyExpansion
 {
-    class ModEntry : Mod, IAssetLoader
+    class ModEntry : Mod, IAssetLoader, IAssetEditor
     {
         /*********
         ** Fields
@@ -126,6 +127,8 @@ namespace BeyondTheValleyExpansion
         /*********
         ** Content API crap
         *********/
+
+        /* AssetLoader */
         public bool CanLoad<T>(IAssetInfo asset)
         {
             // Standard Farm/Farm
@@ -188,6 +191,30 @@ namespace BeyondTheValleyExpansion
                 throw new NotSupportedException($"Unexpected asset '{asset.AssetName}'.");
         }
 
+        /* AssetEditor */
+        public bool CanEdit<T>(IAssetInfo asset)
+        {
+            if (asset.AssetNameEquals("Data/Crops"))
+                return true;
+
+            else
+                return false;
+        }
+
+        public void Edit<T>(IAssetData asset)
+        {
+            if (asset.AssetNameEquals("Data/Crops"))
+            {
+                IDictionary<int, string> data = asset.AsDictionary<int, string>().Data;
+
+                foreach (int itemID in data.Keys)
+                {
+                    string[] fields = data[itemID].Split('/').ToArray();
+                    // TODO
+                }
+            }
+        }
+
         // ---------------------------- \\
 
         /*********
@@ -222,7 +249,7 @@ namespace BeyondTheValleyExpansion
         private void ModMessageReceived(object sender, ModMessageReceivedEventArgs e)
         {
             // read list
-            if (e.FromModID == "Jessebot.BeyondTheValley" && e.Type == "DeletedTiles")
+            if (e.FromModID == "Jessebot.BeyondTheValleyExpansion" && e.Type == "DeletedTiles")
             {
                 TileActionFramework.mpInputArgs = e.ReadAs<List<string>>();
             }
@@ -374,7 +401,7 @@ namespace BeyondTheValleyExpansion
 
         private void DayStarted(object sender, DayStartedEventArgs e)
         {
-            // todo
+
         }
 
         /*********
