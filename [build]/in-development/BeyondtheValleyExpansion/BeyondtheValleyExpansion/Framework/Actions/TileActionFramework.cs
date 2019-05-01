@@ -158,9 +158,9 @@ namespace BeyondTheValleyExpansion.Framework.Actions
                 string currentGameLocation = Game1.player.currentLocation.Name; // get current location's string
 
                 //if specified layer does not exist
-                if (!StaticFarmFields.layerValues.Contains(strLayer))
+                if (!RefFarm.layerValues.Contains(strLayer))
                 {
-                    string value = string.Join(", ", StaticFarmFields.layerValues);
+                    string value = string.Join(", ", RefFarm.layerValues);
 
                     parseError = true;
                     this.Monitor.Log($"The specified layer(\"{strLayer}\") for a [Action {currentAction}] is not valid. Eligible values: \"{value}\". The TileAction will not work", LogLevel.Error);

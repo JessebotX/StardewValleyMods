@@ -7,6 +7,7 @@ using System.IO;
 using Microsoft.Xna.Framework;
 using StardewValley;
 using StardewValley.Tools;
+using StardewValley.TerrainFeatures;
 using StardewModdingAPI;
 using StardewModdingAPI.Framework;
 using StardewModdingAPI.Events;
@@ -17,7 +18,7 @@ using xTile.Tiles;
 using BeyondTheValleyExpansion.Framework;
 using BeyondTheValleyExpansion.Framework.Actions;
 using BeyondTheValleyExpansion.Framework.ContentPacks;
-using StardewValley.TerrainFeatures;
+using BeyondTheValleyExpansion.Framework.Farm;
 
 namespace BeyondTheValleyExpansion
 {
@@ -26,16 +27,8 @@ namespace BeyondTheValleyExpansion
         /*********
         ** Fields
         *********/
-        /// <summary> provides simplified API's for writing mods </summary>
-        public static IModHelper ModHelper;
-        /// <summary> encapsulates monitoring and logging for a given module</summary>
-        public static IMonitor ModMonitor;
-        /// <summary> provides translations stored in the mods i18n folder</summary>
-        public static ITranslationHelper i18n;
-
         /// <summary> instance of <see cref="TileActionFramework"/> class that contains the tile action code</summary>
         private TileActionFramework TileActionFramework;
-
         /// <summary> instance of <see cref="AvailableContentPackEdits"/> class that contains available assets to edit </summary>
         private AvailableContentPackEdits EditAsset = new AvailableContentPackEdits();
         /// <summary> instance of <see cref="TilesheetCompatibility"/> class that contains the tilesheet compatibility check </summary>
@@ -50,9 +43,9 @@ namespace BeyondTheValleyExpansion
         *********/
         public override void Entry(IModHelper helper)
         {
-            ModEntry.ModHelper = helper;
-            ModEntry.ModMonitor = this.Monitor;
-            ModEntry.i18n = helper.Translation;
+            RefMod.ModHelper = helper;
+            RefMod.ModMonitor = this.Monitor;
+            RefMod.i18n = helper.Translation;
 
             // create instance of TileActionFramework class 
             TileActionFramework = new TileActionFramework(helper, Monitor);
@@ -151,7 +144,7 @@ namespace BeyondTheValleyExpansion
             if (!EditAsset.replaceFarm && asset.AssetNameEquals("Maps/Farm"))
             {
                 // apply custom tilesheet support
-                Map map = this.Helper.Content.Load<Map>(StaticFileFields.bveFarm);
+                Map map = this.Helper.Content.Load<Map>(RefFile.bveFarm);
                 TilesheetCompat.TilesheetRecolours(map);
                 return (T)(object)map;
             }
@@ -164,7 +157,7 @@ namespace BeyondTheValleyExpansion
             // Forest Farm/Farm_Foraging
             if (!EditAsset.replaceFarm_Foraging && asset.AssetNameEquals("Maps/Farm_Foraging"))
             {
-                Map map = this.Helper.Content.Load<Map>(StaticFileFields.bveFarm_Foraging);
+                Map map = this.Helper.Content.Load<Map>(RefFile.bveFarm_Foraging);
                 TilesheetCompat.TilesheetRecolours(map);
                 return (T)(object)map;
             }
@@ -177,7 +170,7 @@ namespace BeyondTheValleyExpansion
             // Wilderness Farm/Farm_Combat
             if (!EditAsset.replaceFarm_Combat && asset.AssetNameEquals("Maps/Farm_Combat"))
             {
-                Map map = this.Helper.Content.Load<Map>(StaticFileFields.bveFarm_Combat);
+                Map map = this.Helper.Content.Load<Map>(RefFile.bveFarm_Combat);
                 TilesheetCompat.TilesheetRecolours(map);
                 return (T)(object)map;
             }
@@ -249,7 +242,7 @@ namespace BeyondTheValleyExpansion
         private void ModMessageReceived(object sender, ModMessageReceivedEventArgs e)
         {
             // read list
-            if (e.FromModID == "Jessebot.BeyondTheValleyExpansion" && e.Type == "DeletedTiles")
+            if (e.FromModID == ModManifest.UniqueID && e.Type == "DeletedTiles")
             {
                 TileActionFramework.mpInputArgs = e.ReadAs<List<string>>();
             }
@@ -281,7 +274,7 @@ namespace BeyondTheValleyExpansion
                         string[] input = tileAction.Split(' ').Skip(1).ToArray();
 
                         //get i18n key
-                        string strMessage = i18n.Get(input[0]);
+                        string strMessage = RefMod.i18n.Get(input[0]);
 
                         //print's message out
                         Game1.drawObjectDialogue(strMessage);
@@ -401,7 +394,7 @@ namespace BeyondTheValleyExpansion
 
         private void DayStarted(object sender, DayStartedEventArgs e)
         {
-
+            // todo
         }
 
         /*********

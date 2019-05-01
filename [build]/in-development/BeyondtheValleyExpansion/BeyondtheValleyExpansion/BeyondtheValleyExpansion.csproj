@@ -49,9 +49,11 @@
     <Compile Include="Framework\ContentPacks\AvailableContentPackEdits.cs" />
     <Compile Include="Framework\ContentPacks\BVEEditModel.cs" />
     <Compile Include="Framework\ContentPacks\ContentPackModel.cs" />
-    <Compile Include="Framework\FarmResources.cs" />
-    <Compile Include="Framework\StaticFarmFields.cs" />
-    <Compile Include="Framework\StaticFileFields.cs" />
+    <Compile Include="Framework\Farm\FarmResources.cs" />
+    <Compile Include="Framework\Farm\FarmWorks.cs" />
+    <Compile Include="Framework\RefFarm.cs" />
+    <Compile Include="Framework\RefFile.cs" />
+    <Compile Include="Framework\RefMod.cs" />
     <Compile Include="Framework\TilesheetCompatibility.cs" />
     <Compile Include="ModEntry.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

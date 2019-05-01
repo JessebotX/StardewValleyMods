@@ -92,7 +92,7 @@
 			"Name": "Color",
 			"Value": "pink",
 			"When": {
-				"EnabledColor": "Orange",
+				"EnabledColor": "Pink",
 				"HasFile:assets/pink.png": "true" 
 			}
 		},

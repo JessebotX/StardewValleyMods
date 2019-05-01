@@ -12,11 +12,11 @@ namespace BeyondTheValleyExpansion.Framework.ContentPacks
         /*********
          ** Check if asset is being replaced
          *********/
-        /// <summary> check if content pack(s) are replacing <see cref="StaticFileFields.bveFarm"/> </summary>
+        /// <summary> check if content pack(s) are replacing <see cref="RefFile.bveFarm"/> </summary>
         public bool replaceFarm;
-        /// <summary> check if content pack(s) are replacing <see cref="StaticFileFields.bveFarm_Combat"/></summary>
+        /// <summary> check if content pack(s) are replacing <see cref="RefFile.bveFarm_Combat"/></summary>
         public bool replaceFarm_Combat;
-        /// <summary> check if content pack(s) are replacing <see cref="StaticFileFields.bveFarm_Foraging"/></summary>
+        /// <summary> check if content pack(s) are replacing <see cref="RefFile.bveFarm_Foraging"/></summary>
         public bool replaceFarm_Foraging;
 
         /*********

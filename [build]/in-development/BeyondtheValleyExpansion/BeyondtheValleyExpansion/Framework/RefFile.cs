@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BeyondTheValleyExpansion.Framework
 {
-    class StaticFileFields
+    class RefFile
     {
         /// <summary> relative path containing 'Farm.tbin' </summary>
         public static string bveFarm = "assets/Maps/FarmMaps/Farm.tbin";

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BeyondTheValleyExpansion.Framework
+namespace BeyondTheValleyExpansion.Framework.Farm
 {
     class FarmResources
     {

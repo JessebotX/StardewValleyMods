@@ -8,8 +8,9 @@ using StardewModdingAPI;
 
 namespace BeyondTheValleyExpansion.Framework
 {
-    public class StaticFarmFields
+    public class RefFarm
     {
+        /// <summary> accepted map layer values to use for custom tile actions </summary>
         public static string[] layerValues = { "Back", "Buildings", "Front", "AlwaysFront" };
 
         /// <summary> Farm/standard farm id </summary>
