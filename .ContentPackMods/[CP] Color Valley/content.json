@@ -2,8 +2,8 @@
 	"Format": "1.6",
 	"ConfigSchema": {
 		"EnabledColor": {
-			"AllowValues": "Blue, Red, Yellow, Green, Black, White, Grey, Orange, Pink, Brown, Purple, Transparent",
-			"Default": "Transparent"
+			"AllowValues": "Blue, Red, Yellow, Green, Black, White, Grey, Orange, Pink, Brown, Purple",
+			"Default": "Black"
 		},
 		"DisabledTilesheets": {
 			"AllowValues": "bathhouse_tiles, bugLandTiles, cave, cavedarker, coopTiles, darkroom_tiles, DesertTiles, ElliottHouseTiles, ElliottSeaTiles, EmilyDreamscapeTiles, farmhouse_tiles, FarmhouseTiles, Festivals, GreenHouseInterior, HarveyBalloonTiles, mermaid_house_tiles, night_market_tilesheet_objects, nightSceneMaru, samshowtiles, season_beach, season_outdoorsTileSheet, sebastianMountainTiles, sebastianRideTile, SewerTiles, stadium_tiles, TownIndoors, townInterior, walls_and_floors, WitchHutTiles, witchSwampTiles, WizardHouseTiles, WoodBuildings",
@@ -105,15 +105,6 @@
 				"HasFile:assets/brown.png": "true" 
 			}
 		},
-
-		{
-			"Name": "Color",
-			"Value": "transparent",
-			"When": {
-				"EnabledColor": "Transparent",
-				"HasFile:assets/transparent.png": "true"
-			}
-		}
 	],
 
 	"Changes": [

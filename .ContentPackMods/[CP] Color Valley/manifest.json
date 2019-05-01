@@ -4,7 +4,7 @@
 	"Version": "1.0",
 	"Description": "Replaces most things with just the same colour",
 	"UniqueID": "Jessebot.ColorValley",
-	"UpdateKeys": [],
+	"UpdateKeys": [ "Nexus:3854"],
 	"ContentPackFor": {
 		"UniqueID": "Pathoschild.ContentPatcher"
 	}
