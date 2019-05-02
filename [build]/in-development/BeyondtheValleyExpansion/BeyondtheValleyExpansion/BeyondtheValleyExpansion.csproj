@@ -45,6 +45,7 @@
   <ItemGroup>
     <Compile Include="Framework\Actions\SaveDeletedTilesModel.cs" />
     <Compile Include="Framework\Actions\TileActionFramework.cs" />
+    <Compile Include="Framework\TilesheetCompatibility.cs" />
     <Compile Include="Framework\Alchemy.cs" />
     <Compile Include="Framework\ContentPacks\AvailableContentPackEdits.cs" />
     <Compile Include="Framework\ContentPacks\BVEEditModel.cs" />
@@ -54,7 +55,6 @@
     <Compile Include="Framework\RefFarm.cs" />
     <Compile Include="Framework\RefFile.cs" />
     <Compile Include="Framework\RefMod.cs" />
-    <Compile Include="Framework\TilesheetCompatibility.cs" />
     <Compile Include="ModEntry.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

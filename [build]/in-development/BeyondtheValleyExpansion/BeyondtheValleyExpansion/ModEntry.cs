@@ -34,10 +34,6 @@ namespace BeyondTheValleyExpansion
         /// <summary> instance of <see cref="TilesheetCompatibility"/> class that contains the tilesheet compatibility check </summary>
         private TilesheetCompatibility TilesheetCompat = new TilesheetCompatibility();
 
-        /* other */
-        /// <summary> How many Content Packs are installed </summary>
-        private int contentPacksInstalled;
-
         /*********
         ** Entry
         *********/
@@ -82,7 +78,7 @@ namespace BeyondTheValleyExpansion
 
                 // if content.json exists
                 else if (contentFileExists)
-                    contentPacksInstalled += 1;
+                    RefMod.contentPacksInstalled += 1;
 
                 foreach (BVEEditModel edit in pack.ReplaceFiles)
                 {
@@ -219,9 +215,9 @@ namespace BeyondTheValleyExpansion
                 return;
 
             // content packs installed
-            this.Monitor.Log($"{contentPacksInstalled} content packs installed for Beyond the Valley");
+            this.Monitor.Log($"{RefMod.contentPacksInstalled} content packs installed for Beyond the Valley");
 
-            /// Delete saved tiles if any <see cref="TileActionFramework.SaveDeleteTilesAction()"></see>
+            // Delete saved tiles if any
             TileActionFramework.SaveDeleteTilesAction();
         }
 

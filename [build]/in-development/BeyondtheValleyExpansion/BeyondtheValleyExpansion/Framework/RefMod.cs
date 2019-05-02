@@ -7,6 +7,9 @@ using StardewModdingAPI;
 
 namespace BeyondTheValleyExpansion.Framework
 {
+    /// <summary>
+    /// Static mod helper references
+    /// </summary>
     class RefMod
     {
         /********* 
@@ -23,6 +26,8 @@ namespace BeyondTheValleyExpansion.Framework
 
         /*********
          ** Mod-specific
-         *********/ 
+         *********/
+        /// <summary> how many content packs are installed </summary>
+        public static int contentPacksInstalled;
     }
 }

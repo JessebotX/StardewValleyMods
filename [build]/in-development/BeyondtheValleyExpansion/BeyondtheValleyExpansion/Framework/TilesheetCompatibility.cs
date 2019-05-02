@@ -22,12 +22,12 @@ namespace BeyondTheValleyExpansion.Framework
             DirectoryInfo compatFolder = this.GetCustomTilesheetFolder();
             if (compatFolder != null)
             {
-                ModEntry.ModMonitor.Log($"Applying map tilesheets from {Path.Combine(this.TilesheetsPath, compatFolder.Name)}.", LogLevel.Trace);
+                RefMod.ModMonitor.Log($"Applying map tilesheets from {Path.Combine(this.TilesheetsPath, compatFolder.Name)}.", LogLevel.Trace);
                 foreach (TileSheet tilesheet in map.TileSheets)
                 {
                     string assetFileName = Path.GetFileName(tilesheet.ImageSource);
                     if (File.Exists(Path.Combine(compatFolder.FullName, assetFileName)))
-                        tilesheet.ImageSource = ModEntry.ModHelper.Content.GetActualAssetKey(Path.Combine(this.TilesheetsPath, compatFolder.Name, assetFileName));
+                        tilesheet.ImageSource = RefMod.ModHelper.Content.GetActualAssetKey(Path.Combine(this.TilesheetsPath, compatFolder.Name, assetFileName));
                 }
             }
         }
@@ -36,14 +36,14 @@ namespace BeyondTheValleyExpansion.Framework
         public DirectoryInfo GetCustomTilesheetFolder()
         {
             // get root compatibility folder
-            DirectoryInfo compatFolder = new DirectoryInfo(Path.Combine(ModEntry.ModHelper.DirectoryPath, this.TilesheetsPath));
+            DirectoryInfo compatFolder = new DirectoryInfo(Path.Combine(RefMod.ModHelper.DirectoryPath, this.TilesheetsPath));
             if (!compatFolder.Exists)
                 return null;
 
             // get first folder matching an installed mod
             foreach (DirectoryInfo folder in compatFolder.GetDirectories())
             {
-                if (folder.Name != "_default" && ModEntry.ModHelper.ModRegistry.IsLoaded(folder.Name))
+                if (folder.Name != "_default" && RefMod.ModHelper.ModRegistry.IsLoaded(folder.Name))
                     return folder;
             }
 
