@@ -7,7 +7,7 @@ using xTile;
 
 namespace BeyondTheValleyExpansion.Framework.ContentPacks
 {
-    class AvailableContentPackEdits
+    class AvailableEdits
     {
         /*********
          ** Check if asset is being replaced
@@ -25,9 +25,15 @@ namespace BeyondTheValleyExpansion.Framework.ContentPacks
         // Farm Maps
         /// <summary> stores the read 'Farm' asset from the content pack </summary>
         public Map newFarm;
+        /// <summary> stores the read 'Farm' asset from the mod using BeyondtheValleyAPI </summary>
+        public Map api_newFarm;
         /// <summary> stores the read 'Farm_Combat' asset from the content pack </summary>
         public Map newFarm_Combat;
+        /// <summary> stores the read 'Farm_Combat' asset from the mod using BeyondtheValleyAPI </summary>
+        public Map api_newFarm_Combat;
         /// <summary> stores the read 'Farm_Foraging' asset from the content pack </summary>
         public Map newFarm_Foraging;
+        /// <summary> stores the read 'Farm_Foraging' asset from the mod using BeyondtheValleyAPI </summary>
+        public Map api_newFarm_Foraging;
     }
 }

@@ -27,12 +27,12 @@ namespace BeyondTheValleyExpansion
         /*********
         ** Fields
         *********/
+        /// <summary> instance of <see cref="AvailableEdits"/> class that contains available assets to edit </summary>
+        private AvailableEdits _NewEdit;
         /// <summary> instance of <see cref="TileActionFramework"/> class that contains the tile action code</summary>
-        private TileActionFramework TileActionFramework;
-        /// <summary> instance of <see cref="AvailableContentPackEdits"/> class that contains available assets to edit </summary>
-        private AvailableContentPackEdits EditAsset = new AvailableContentPackEdits();
+        private TileActionFramework _TileActions;
         /// <summary> instance of <see cref="TilesheetCompatibility"/> class that contains the tilesheet compatibility check </summary>
-        private TilesheetCompatibility TilesheetCompat = new TilesheetCompatibility();
+        private TilesheetCompatibility _TilesheetCompat;
 
         /*********
         ** Entry
@@ -43,8 +43,10 @@ namespace BeyondTheValleyExpansion
             RefMod.ModMonitor = this.Monitor;
             RefMod.i18n = helper.Translation;
 
-            // create instance of TileActionFramework class 
-            TileActionFramework = new TileActionFramework(helper, Monitor);
+            // use instances 
+            _NewEdit = new AvailableEdits();
+            _TileActions = new TileActionFramework();
+            _TilesheetCompat = new TilesheetCompatibility();
 
             /* other methods */
             ContentPackData();
@@ -88,18 +90,18 @@ namespace BeyondTheValleyExpansion
                     {
                         // Standard Farm/Farm
                         case "assets/Maps/FarmMaps/Farm.tbin":
-                            EditAsset.newFarm = contentPack.LoadAsset<Map>(edit.FromFile);
-                            EditAsset.replaceFarm = true;
+                            _NewEdit.newFarm = contentPack.LoadAsset<Map>(edit.FromFile);
+                            _NewEdit.replaceFarm = true;
                             continue;
                         // Farm_Combat/Wilderness Farm
                         case "assets/Maps/FarmMaps/Farm_Combat.tbin":
-                            EditAsset.newFarm_Combat = contentPack.LoadAsset<Map>(edit.FromFile);
-                            EditAsset.replaceFarm_Combat = true;
+                            _NewEdit.newFarm_Combat = contentPack.LoadAsset<Map>(edit.FromFile);
+                            _NewEdit.replaceFarm_Combat = true;
                             continue;
                         // Farm_Foraging/Forest Farm
                         case "assets/Maps/FarmMaps/Farm_Foraging.tbin":
-                            EditAsset.newFarm_Foraging = contentPack.LoadAsset<Map>(edit.FromFile);
-                            EditAsset.replaceFarm_Foraging = true;
+                            _NewEdit.newFarm_Foraging = contentPack.LoadAsset<Map>(edit.FromFile);
+                            _NewEdit.replaceFarm_Foraging = true;
                             continue;
 
                         // ReplaceFile path does not exist or is not supported
@@ -137,43 +139,43 @@ namespace BeyondTheValleyExpansion
         public T Load<T>(IAssetInfo asset)
         {
             // Standard Farm/Farm
-            if (!EditAsset.replaceFarm && asset.AssetNameEquals("Maps/Farm"))
+            if (!_NewEdit.replaceFarm && asset.AssetNameEquals("Maps/Farm"))
             {
                 // apply custom tilesheet support
                 Map map = this.Helper.Content.Load<Map>(RefFile.bveFarm);
-                TilesheetCompat.TilesheetRecolours(map);
+                _TilesheetCompat.TilesheetRecolours(map);
                 return (T)(object)map;
             }
-            else if (EditAsset.replaceFarm && asset.AssetNameEquals("Maps/Farm"))
+            else if (_NewEdit.replaceFarm && asset.AssetNameEquals("Maps/Farm"))
             {
-                TilesheetCompat.TilesheetRecolours(EditAsset.newFarm);
-                return (T)(object)EditAsset.newFarm;
+                _TilesheetCompat.TilesheetRecolours(_NewEdit.newFarm);
+                return (T)(object)_NewEdit.newFarm;
             }
 
             // Forest Farm/Farm_Foraging
-            if (!EditAsset.replaceFarm_Foraging && asset.AssetNameEquals("Maps/Farm_Foraging"))
+            if (!_NewEdit.replaceFarm_Foraging && asset.AssetNameEquals("Maps/Farm_Foraging"))
             {
                 Map map = this.Helper.Content.Load<Map>(RefFile.bveFarm_Foraging);
-                TilesheetCompat.TilesheetRecolours(map);
+                _TilesheetCompat.TilesheetRecolours(map);
                 return (T)(object)map;
             }
-            else if (EditAsset.replaceFarm_Foraging && asset.AssetNameEquals("Maps/Farm_Foraging"))
+            else if (_NewEdit.replaceFarm_Foraging && asset.AssetNameEquals("Maps/Farm_Foraging"))
             {
-                TilesheetCompat.TilesheetRecolours(EditAsset.newFarm);
-                return (T)(object)EditAsset.newFarm;
+                _TilesheetCompat.TilesheetRecolours(_NewEdit.newFarm);
+                return (T)(object)_NewEdit.newFarm;
             }
 
             // Wilderness Farm/Farm_Combat
-            if (!EditAsset.replaceFarm_Combat && asset.AssetNameEquals("Maps/Farm_Combat"))
+            if (!_NewEdit.replaceFarm_Combat && asset.AssetNameEquals("Maps/Farm_Combat"))
             {
                 Map map = this.Helper.Content.Load<Map>(RefFile.bveFarm_Combat);
-                TilesheetCompat.TilesheetRecolours(map);
+                _TilesheetCompat.TilesheetRecolours(map);
                 return (T)(object)map;
             }
-            else if (EditAsset.replaceFarm_Combat && asset.AssetNameEquals("Maps/Farm_Combat"))
+            else if (_NewEdit.replaceFarm_Combat && asset.AssetNameEquals("Maps/Farm_Combat"))
             {
-                TilesheetCompat.TilesheetRecolours(EditAsset.newFarm);
-                return (T)(object)EditAsset.newFarm;
+                _TilesheetCompat.TilesheetRecolours(_NewEdit.newFarm);
+                return (T)(object)_NewEdit.newFarm;
             }
 
             else
@@ -218,7 +220,7 @@ namespace BeyondTheValleyExpansion
             this.Monitor.Log($"{RefMod.contentPacksInstalled} content packs installed for Beyond the Valley");
 
             // Delete saved tiles if any
-            TileActionFramework.SaveDeleteTilesAction();
+            _TileActions.SaveDeleteTilesAction();
         }
 
         private void UpdateTicked(object sender, UpdateTickedEventArgs e)
@@ -227,20 +229,20 @@ namespace BeyondTheValleyExpansion
                 return;
 
             /* --- (Multiplayer) sync deleted tiles from tile actions --- */
-            if (TileActionFramework.tileRemoved == true && !Context.IsMainPlayer)
+            if (_TileActions.tileRemoved == true && !Context.IsMainPlayer)
             {
-                TileActionFramework.MultiplayerDeleteTilesAction();
+                _TileActions.MultiplayerDeleteTilesAction();
 
-                TileActionFramework.tileRemoved = false;
+                _TileActions.tileRemoved = false;
             }
         }
 
         private void ModMessageReceived(object sender, ModMessageReceivedEventArgs e)
         {
             // read list
-            if (e.FromModID == ModManifest.UniqueID && e.Type == "DeletedTiles")
+            if (e.FromModID == this.ModManifest.UniqueID && e.Type == "DeletedTiles")
             {
-                TileActionFramework.mpInputArgs = e.ReadAs<List<string>>();
+                _TileActions.mpInputArgs = e.ReadAs<List<string>>();
             }
         }
 
@@ -279,9 +281,7 @@ namespace BeyondTheValleyExpansion
                     // Action | BVEAlchemy
                     // If interacted, stores item for magic
                     if (tileAction.Contains("BVEAlchemy"))
-                    {
-                        
-                    }
+                        _TileActions.Alchemy(tileAction);
 
                     // --- Delete Tiles Actions --- \\
 
@@ -296,7 +296,7 @@ namespace BeyondTheValleyExpansion
                         int toolUpgradeLevel = 1;
 
                         // calls PickaxeDeleteTilesAction in TileActionFramework
-                        TileActionFramework.PickaxeDeleteTilesAction(tileAction, currentAction, toolUpgradeLevel);
+                        _TileActions.PickaxeDeleteTilesAction(tileAction, currentAction, toolUpgradeLevel);
                     }
                     // Action | BVESteelPickaxe (coordX) (coordY) (strLayer)
                     // If interacted with your Steel pickaxe(+) equipped, it will remove the following tiles on that layer, separate with '/' delimiter 
@@ -308,7 +308,7 @@ namespace BeyondTheValleyExpansion
                         int toolUpgradeLevel = 2;
 
                         // calls PickaxeDeleteTilesAction in TileActionFramework
-                        TileActionFramework.PickaxeDeleteTilesAction(tileAction, currentAction, toolUpgradeLevel);
+                        _TileActions.PickaxeDeleteTilesAction(tileAction, currentAction, toolUpgradeLevel);
                     }
                     // Action | BVEGoldPickaxe (coordX) (coordY) (strLayer)
                     // If interacted with your Gold pickaxe(+) equipped, it will remove the following tiles on that layer, separate with '/' delimiter 
@@ -320,7 +320,7 @@ namespace BeyondTheValleyExpansion
                         int toolUpgradeLevel = 3;
 
                         // calls PickaxeDeleteTilesAction in TileActionFramework
-                        TileActionFramework.PickaxeDeleteTilesAction(tileAction, currentAction, toolUpgradeLevel);
+                        _TileActions.PickaxeDeleteTilesAction(tileAction, currentAction, toolUpgradeLevel);
                     }
                     // Action | BVEIridiumPickaxe (coordX) (coordY) (strLayer)
                     // If interacted with your Iridium pickaxe(+) equipped, it will remove the following tiles on that layer, separate with '/' delimiter 
@@ -332,7 +332,7 @@ namespace BeyondTheValleyExpansion
                         int toolUpgradeLevel = 4;
 
                         // Calls PickaxeDeleteTilesAction in TileActionFramework 
-                        TileActionFramework.PickaxeDeleteTilesAction(tileAction, currentAction, toolUpgradeLevel);
+                        _TileActions.PickaxeDeleteTilesAction(tileAction, currentAction, toolUpgradeLevel);
                     }
 
                     // axe
@@ -346,7 +346,7 @@ namespace BeyondTheValleyExpansion
                         int toolUpgradeLevel = 1;
 
                         // Calls AxeDeleteTilesAction in TileActionFramework
-                        TileActionFramework.AxeDeleteTilesAction(tileAction, currentAction, toolUpgradeLevel);
+                        _TileActions.AxeDeleteTilesAction(tileAction, currentAction, toolUpgradeLevel);
                     }
                     // Action | BVESteel Axe (coordX) (coordY) (strLayer
                     // If interacted with your Steel axe(+) equipped, it will remove the following tiles on that layer, separate with '/' delimiter 
@@ -358,7 +358,7 @@ namespace BeyondTheValleyExpansion
                         int toolUpgradeLevel = 2;
 
                         // Calls AxeDeleteTilesAction in TileActionFramework 
-                        TileActionFramework.AxeDeleteTilesAction(tileAction, currentAction, toolUpgradeLevel);
+                        _TileActions.AxeDeleteTilesAction(tileAction, currentAction, toolUpgradeLevel);
                     }
                     // Action | BVEGold Axe (coordX) (coordY) (strLayer)
                     // If interacted with your Gold axe(+) equipped, it will remove the following tiles on that layer, separate with '/' delimiter 
@@ -370,7 +370,7 @@ namespace BeyondTheValleyExpansion
                         int toolUpgradeLevel = 3;
 
                         // Calls AxeDeleteTilesAction in TileActionFramework
-                        TileActionFramework.AxeDeleteTilesAction(tileAction, currentAction, toolUpgradeLevel);
+                        _TileActions.AxeDeleteTilesAction(tileAction, currentAction, toolUpgradeLevel);
                     }
                     // Action | BVEIridiumAxe (coordX) (coordY) (strLayer)
                     // If interacted with your Iridium axe(+) equipped, it will remove the following tiles on that layer, separate with '/' delimiter 
@@ -382,7 +382,7 @@ namespace BeyondTheValleyExpansion
                         int toolUpgradeLevel = 4;
 
                         // Calls AxeDeleteTilesAction in TileActionFramework
-                        TileActionFramework.AxeDeleteTilesAction(tileAction, currentAction, toolUpgradeLevel);
+                        _TileActions.AxeDeleteTilesAction(tileAction, currentAction, toolUpgradeLevel);
                     }
                 }
             }
@@ -401,7 +401,15 @@ namespace BeyondTheValleyExpansion
         /// <param name="args">The arguments received by the command. Each word after the command name is a separate argument.</param>
         private void ConsoleCommands_PurgeSaveDeletedTiles(string command, string[] args)
         {
-            TileActionFramework.PurgeSaveDeletedTiles();
+            _TileActions.PurgeSaveDeletedTiles();
+        }
+
+        /*********
+         ** Get API
+         *********/
+        public override object GetApi()
+        {
+            return new BeyondtheValleyAPI();
         }
     }
 }
