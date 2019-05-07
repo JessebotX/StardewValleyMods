@@ -19,6 +19,7 @@ using BeyondTheValleyExpansion.Framework;
 using BeyondTheValleyExpansion.Framework.Actions;
 using BeyondTheValleyExpansion.Framework.ContentPacks;
 using BeyondTheValleyExpansion.Framework.Farm;
+using BeyondTheValleyExpansion.Framework.Alchemy;
 
 namespace BeyondTheValleyExpansion
 {
@@ -33,6 +34,10 @@ namespace BeyondTheValleyExpansion
         private TileActionFramework _TileActions;
         /// <summary> instance of <see cref="TilesheetCompatibility"/> class that contains the tilesheet compatibility check </summary>
         private TilesheetCompatibility _TilesheetCompat;
+
+        private WriteAlchemyData writeData = new WriteAlchemyData();
+        /// <summary> the alchemy data model </summary>
+        public AlchemyDataModel AlchemyData;
 
         /*********
         ** Entry
@@ -61,6 +66,10 @@ namespace BeyondTheValleyExpansion
             /* Console Commands */
             helper.ConsoleCommands.Add("bve_purgesavedeletedtiles", "Removes the deleted tiles on a map from the Delete Tile Actions " +
                 "\n\n Best used when you are changing maps mid save (and that map has the Delete Tile Actions)", this.ConsoleCommands_PurgeSaveDeletedTiles);
+
+            AlchemyData = RefMod.ModHelper.Data.ReadJsonFile<AlchemyDataModel>("data/AlchemyIDs.json") ?? new AlchemyDataModel();
+            writeData.DefaultData();
+            RefMod.ModHelper.Data.WriteJsonFile("data/AlchemyIDs.json", AlchemyData);
         }
 
         private void ContentPackData()

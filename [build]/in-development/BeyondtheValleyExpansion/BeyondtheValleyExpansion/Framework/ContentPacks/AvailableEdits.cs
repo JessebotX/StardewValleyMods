@@ -14,14 +14,20 @@ namespace BeyondTheValleyExpansion.Framework.ContentPacks
          *********/
         /// <summary> check if content pack(s) are replacing <see cref="RefFile.bveFarm"/> </summary>
         public bool replaceFarm;
+        /// <summary> check if a mod using BeyondtheValleyAPI are replacing <see cref="RefFile.bveFarm"/> </summary>
+        public bool api_replaceFarm;
         /// <summary> check if content pack(s) are replacing <see cref="RefFile.bveFarm_Combat"/></summary>
         public bool replaceFarm_Combat;
+        /// <summary> check if a mod using BeyondtheValleyAPI are replacing <see cref="RefFile.bveFarm"/> </summary>
+        public bool api_replaceFarm_Combat;
         /// <summary> check if content pack(s) are replacing <see cref="RefFile.bveFarm_Foraging"/></summary>
         public bool replaceFarm_Foraging;
+        /// <summary> check if a mod using BeyondtheValleyAPI are replacing <see cref="RefFile.bveFarm"/> </summary>
+        public bool api_replaceFarm_Foraging;
 
         /*********
          ** Asset storage
-         *********/ 
+         *********/
         // Farm Maps
         /// <summary> stores the read 'Farm' asset from the content pack </summary>
         public Map newFarm;

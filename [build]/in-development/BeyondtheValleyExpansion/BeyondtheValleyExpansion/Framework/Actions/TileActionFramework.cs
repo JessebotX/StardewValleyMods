@@ -15,6 +15,7 @@ using xTile.Tiles;
 using System.IO;
 using BeyondTheValleyExpansion.Framework;
 using BeyondTheValleyExpansion.Framework.Actions;
+using BeyondTheValleyExpansion.Framework.Alchemy;
 using StardewValley.Tools;
 using StardewValley.Menus;
 
@@ -37,9 +38,9 @@ namespace BeyondTheValleyExpansion.Framework.Actions
         public bool pickaxeUnderLeveled;
 
         /// <summary> references the <see cref="SaveDeletedTilesModel"/> class</summary>
-        private SaveDeletedTilesModel _SaveDeletedTiles;
+        private SaveDeletedTilesModel SaveDeletedTiles;
         /// <summary> instance of <see cref="Alchemy"/> class that contains the alchemy framework </summary>
-        private Alchemy _Alchemy = new Alchemy();
+        private AlchemyFramework _Alchemy = new AlchemyFramework();
 
         /// <summary> Retrieve multiplayer message of deleted tiles </summary>
         public List<string> mpInputArgs = new List<string>();
@@ -53,19 +54,13 @@ namespace BeyondTheValleyExpansion.Framework.Actions
 
             if (_Alchemy.unlockedAlchemy)
             {
-                string mix = "mix-ingredients";
-                string remove = "remove-ingredients";
-                string add = "add-ingredients";
-                _Alchemy.alchemyMenuChoices.Add(new Response(mix, RefMod.i18n.Get("tileaction-alchemy.3")));
-                _Alchemy.alchemyMenuChoices.Add(new Response(remove, RefMod.i18n.Get("tileaction-alchemy.4")));
-                _Alchemy.alchemyMenuChoices.Add(new Response(add, RefMod.i18n.Get("tileaction-alchemy.5")));
+                _Alchemy.alchemyMenuOptions.Add(new Response("mix-ingredients", RefMod.i18n.Get("tileaction-alchemy.3")));
+                _Alchemy.alchemyMenuOptions.Add(new Response("remove-ingredients", RefMod.i18n.Get("tileaction-alchemy.4")));
+                _Alchemy.alchemyMenuOptions.Add(new Response("add-ingredients", RefMod.i18n.Get("tileaction-alchemy.5")));
 
-                Game1.activeClickableMenu = new DialogueBox("question", _Alchemy.alchemyMenuChoices);
+                Game1.activeClickableMenu = new DialogueBox(RefMod.i18n.Get("tileaction-alchemy.1"), _Alchemy.alchemyMenuOptions);
                 Game1.player.currentLocation.afterQuestion = new GameLocation.afterQuestionBehavior((who, choice) => {
-                    if (choice == mix)
-                    {
-                        
-                    }
+                    _Alchemy.Alchemy(who, choice);
                 });
             }
 
@@ -187,11 +182,11 @@ namespace BeyondTheValleyExpansion.Framework.Actions
                     Game1.player.currentLocation.removeTile(tileX, tileY, strLayer);
 
                     // write deleted tile data to save files
-                    RefMod.ModHelper.Data.WriteSaveData("DeletedTiles", _SaveDeletedTiles);
-                    _SaveDeletedTiles.inputArgs.Add(Convert.ToString(tileX) + " " + Convert.ToString(tileY) + " " + strLayer + " " + currentGameLocation);
+                    RefMod.ModHelper.Data.WriteSaveData("DeletedTiles", SaveDeletedTiles);
+                    SaveDeletedTiles.inputArgs.Add(Convert.ToString(tileX) + " " + Convert.ToString(tileY) + " " + strLayer + " " + currentGameLocation);
 
                     // send multiplayer message
-                    RefMod.ModHelper.Multiplayer.SendMessage(_SaveDeletedTiles.inputArgs, "DeletedTiles");
+                    RefMod.ModHelper.Multiplayer.SendMessage(SaveDeletedTiles.inputArgs, "DeletedTiles");
                     Game1.drawObjectDialogue(RefMod.i18n.Get("tileaction-success.1"));
                     RefMod.ModMonitor.Log($"[Action {currentAction}] removed the tile on [{tileX}, {tileY}] from the {strLayer} Layer", LogLevel.Trace);
 
@@ -237,12 +232,12 @@ namespace BeyondTheValleyExpansion.Framework.Actions
         /// <summary> deletes the saved deleted tiles on the location from <see cref="SaveDeletedTilesModel.inputArgs"/></summary>
         public void SaveDeleteTilesAction()
         {
-            _SaveDeletedTiles = RefMod.ModHelper.Data.ReadSaveData<SaveDeletedTilesModel>("DeletedTiles") ?? new SaveDeletedTilesModel();
+            SaveDeletedTiles = RefMod.ModHelper.Data.ReadSaveData<SaveDeletedTilesModel>("DeletedTiles") ?? new SaveDeletedTilesModel();
 
             // if there are any tiles needed to be deleted
-            if (_SaveDeletedTiles.inputArgs != null)
+            if (SaveDeletedTiles.inputArgs != null)
             {
-                foreach (string input in _SaveDeletedTiles.inputArgs)
+                foreach (string input in SaveDeletedTiles.inputArgs)
                 {
                     string[] arg = input.Split(' ').ToArray();
 
@@ -280,11 +275,11 @@ namespace BeyondTheValleyExpansion.Framework.Actions
         /// <summary> evokes when console command 'bve_purgesavedeletedtiles' is used, clearing out <see cref="SaveDeletedTilesModel.inputArgs"/></summary>
         public void PurgeSaveDeletedTiles()
         {
-            _SaveDeletedTiles.inputArgs.Clear();
-            RefMod.ModHelper.Data.WriteSaveData("DeletedTiles", _SaveDeletedTiles);
+            SaveDeletedTiles.inputArgs.Clear();
+            RefMod.ModHelper.Data.WriteSaveData("DeletedTiles", SaveDeletedTiles);
 
             // update for multiplayer
-            tileRemoved = true;
+            this.tileRemoved = true;
         }
     }
 }

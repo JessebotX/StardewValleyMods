@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using StardewValley;
 using StardewModdingAPI;
 
-namespace BeyondTheValleyExpansion.Framework
+namespace BeyondTheValleyExpansion
 {
     public class RefFarm
     {

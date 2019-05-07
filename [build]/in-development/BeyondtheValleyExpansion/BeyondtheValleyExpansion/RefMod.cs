@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using StardewModdingAPI;
 
-namespace BeyondTheValleyExpansion.Framework
+namespace BeyondTheValleyExpansion
 {
     /// <summary>
     /// Static mod helper references
