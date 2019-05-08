@@ -8,9 +8,11 @@ namespace BeyondTheValleyExpansion.Framework.Alchemy
 {
     class WriteAlchemyData
     {
+        private AlchemyDataModel _AlchemyDataModel = new AlchemyDataModel();
+
         public void DefaultData()
         {
-            AlchemyDataModel.itemData.Add(1, "e");
+            _AlchemyDataModel.itemData.Add(1, "e");
         }
     }
 }

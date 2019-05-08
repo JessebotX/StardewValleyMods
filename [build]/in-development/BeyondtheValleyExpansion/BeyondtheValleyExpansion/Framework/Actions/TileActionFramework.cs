@@ -278,8 +278,13 @@ namespace BeyondTheValleyExpansion.Framework.Actions
             SaveDeletedTiles.inputArgs.Clear();
             RefMod.ModHelper.Data.WriteSaveData("DeletedTiles", SaveDeletedTiles);
 
+            if (SaveDeletedTiles.inputArgs == null)
+                RefMod.ModMonitor.Log("The contents in 'DeletedTiles' will be removed from your save file once you save the game. " +
+                    "\n\n You will need to reload your save game after saving...", LogLevel.Debug);
+                
             // update for multiplayer
             this.tileRemoved = true;
+
         }
     }
 }

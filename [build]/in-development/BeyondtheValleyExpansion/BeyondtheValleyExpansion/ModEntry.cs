@@ -28,16 +28,27 @@ namespace BeyondTheValleyExpansion
         /*********
         ** Fields
         *********/
+        /// <summary> the mod's configuration file </summary>
+        public ModConfig Config;
+
+        /// <summary> instance of <see cref="AlchemyFramework"/> class that contains the main alchemy code</summary>
+        private AlchemyFramework _AlchemyFramework;
         /// <summary> instance of <see cref="AvailableEdits"/> class that contains available assets to edit </summary>
-        private AvailableEdits _NewEdit;
+        private AvailableEdits _Edits;
         /// <summary> instance of <see cref="TileActionFramework"/> class that contains the tile action code</summary>
         private TileActionFramework _TileActions;
         /// <summary> instance of <see cref="TilesheetCompatibility"/> class that contains the tilesheet compatibility check </summary>
         private TilesheetCompatibility _TilesheetCompat;
+        /// <summary> instance of <see cref="WriteAlchemyData"/> class that contains the default</summary>
+        private WriteAlchemyData _WriteData = new WriteAlchemyData();
 
-        private WriteAlchemyData writeData = new WriteAlchemyData();
-        /// <summary> the alchemy data model </summary>
-        public AlchemyDataModel AlchemyData;
+        /*********
+        ** BeyondtheValleyAPI
+        *********/
+        public override object GetApi()
+        {
+            return new BeyondtheValleyAPI();
+        }
 
         /*********
         ** Entry
@@ -47,13 +58,16 @@ namespace BeyondTheValleyExpansion
             RefMod.ModHelper = helper;
             RefMod.ModMonitor = this.Monitor;
             RefMod.i18n = helper.Translation;
+            this.Config = this.Helper.ReadConfig<ModConfig>();
 
             // use instances 
-            _NewEdit = new AvailableEdits();
+            _AlchemyFramework = new AlchemyFramework();
+            _Edits = new AvailableEdits();
             _TileActions = new TileActionFramework();
             _TilesheetCompat = new TilesheetCompatibility();
 
             /* other methods */
+            AddDefaultConfigData();
             ContentPackData();
 
             /* Hook Events */
@@ -67,61 +81,10 @@ namespace BeyondTheValleyExpansion
             helper.ConsoleCommands.Add("bve_purgesavedeletedtiles", "Removes the deleted tiles on a map from the Delete Tile Actions " +
                 "\n\n Best used when you are changing maps mid save (and that map has the Delete Tile Actions)", this.ConsoleCommands_PurgeSaveDeletedTiles);
 
-            AlchemyData = RefMod.ModHelper.Data.ReadJsonFile<AlchemyDataModel>("data/AlchemyIDs.json") ?? new AlchemyDataModel();
-            writeData.DefaultData();
-            RefMod.ModHelper.Data.WriteJsonFile("data/AlchemyIDs.json", AlchemyData);
-        }
+            _AlchemyFramework.AlchemyData = this.Helper.Data.ReadJsonFile<AlchemyDataModel>("Data/AlchemyIDs.json") ?? new AlchemyDataModel();
 
-        private void ContentPackData()
-        {
-            foreach (IContentPack contentPack in this.Helper.ContentPacks.GetOwned())
-            {
-                // bool for if content.json exists
-                bool contentFileExists = File.Exists(Path.Combine(contentPack.DirectoryPath, "content.json"));
-
-                // read content packs
-                ContentPackModel pack = contentPack.ReadJsonFile<ContentPackModel>("content.json");
-                this.Monitor.Log($"Reading: {contentPack.Manifest.Name} {contentPack.Manifest.Version} by {contentPack.Manifest.Author} from {contentPack.DirectoryPath} (ID: {contentPack.Manifest.UniqueID})", LogLevel.Trace);
-
-                // if content.json does not exists
-                if (!contentFileExists)
-                    this.Monitor.Log($"{contentPack.Manifest.Name}({contentPack.Manifest.Version}) by {contentPack.Manifest.Author} is missing a content.json file. Mod will be ignored", LogLevel.Warn);
-
-                // if content.json exists
-                else if (contentFileExists)
-                    RefMod.contentPacksInstalled += 1;
-
-                foreach (BVEEditModel edit in pack.ReplaceFiles)
-                {
-                    this.Monitor.Log($"Replacing {edit.ReplaceFile} with {edit.FromFile}", LogLevel.Trace);
-
-                    switch(edit.ReplaceFile)
-                    {
-                        // Standard Farm/Farm
-                        case "assets/Maps/FarmMaps/Farm.tbin":
-                            _NewEdit.newFarm = contentPack.LoadAsset<Map>(edit.FromFile);
-                            _NewEdit.replaceFarm = true;
-                            continue;
-                        // Farm_Combat/Wilderness Farm
-                        case "assets/Maps/FarmMaps/Farm_Combat.tbin":
-                            _NewEdit.newFarm_Combat = contentPack.LoadAsset<Map>(edit.FromFile);
-                            _NewEdit.replaceFarm_Combat = true;
-                            continue;
-                        // Farm_Foraging/Forest Farm
-                        case "assets/Maps/FarmMaps/Farm_Foraging.tbin":
-                            _NewEdit.newFarm_Foraging = contentPack.LoadAsset<Map>(edit.FromFile);
-                            _NewEdit.replaceFarm_Foraging = true;
-                            continue;
-
-                        // ReplaceFile path does not exist or is not supported
-                        default:
-                            this.Monitor.Log(
-                                $"[Content Pack:{contentPack.Manifest.Name} {contentPack.Manifest.Version}] Failed to replace \"{edit.ReplaceFile}\" because it does not exist and/or is not supported.", 
-                                LogLevel.Error);
-                            continue;
-                    }
-                }
-            }
+            _WriteData.DefaultData();
+            this.Helper.Data.WriteJsonFile("Data/AlchemyIDs.json", _AlchemyFramework.AlchemyData);
         }
 
         /*********
@@ -148,43 +111,43 @@ namespace BeyondTheValleyExpansion
         public T Load<T>(IAssetInfo asset)
         {
             // Standard Farm/Farm
-            if (!_NewEdit.replaceFarm && asset.AssetNameEquals("Maps/Farm"))
+            if (!_Edits.replaceFarm && asset.AssetNameEquals("Maps/Farm"))
             {
                 // apply custom tilesheet support
                 Map map = this.Helper.Content.Load<Map>(RefFile.bveFarm);
                 _TilesheetCompat.TilesheetRecolours(map);
                 return (T)(object)map;
             }
-            else if (_NewEdit.replaceFarm && asset.AssetNameEquals("Maps/Farm"))
+            else if (_Edits.replaceFarm && asset.AssetNameEquals("Maps/Farm"))
             {
-                _TilesheetCompat.TilesheetRecolours(_NewEdit.newFarm);
-                return (T)(object)_NewEdit.newFarm;
+                _TilesheetCompat.TilesheetRecolours(_Edits.newFarm);
+                return (T)(object)_Edits.newFarm;
             }
 
             // Forest Farm/Farm_Foraging
-            if (!_NewEdit.replaceFarm_Foraging && asset.AssetNameEquals("Maps/Farm_Foraging"))
+            if (!_Edits.replaceFarm_Foraging && asset.AssetNameEquals("Maps/Farm_Foraging"))
             {
                 Map map = this.Helper.Content.Load<Map>(RefFile.bveFarm_Foraging);
                 _TilesheetCompat.TilesheetRecolours(map);
                 return (T)(object)map;
             }
-            else if (_NewEdit.replaceFarm_Foraging && asset.AssetNameEquals("Maps/Farm_Foraging"))
+            else if (_Edits.replaceFarm_Foraging && asset.AssetNameEquals("Maps/Farm_Foraging"))
             {
-                _TilesheetCompat.TilesheetRecolours(_NewEdit.newFarm);
-                return (T)(object)_NewEdit.newFarm;
+                _TilesheetCompat.TilesheetRecolours(_Edits.newFarm);
+                return (T)(object)_Edits.newFarm;
             }
 
             // Wilderness Farm/Farm_Combat
-            if (!_NewEdit.replaceFarm_Combat && asset.AssetNameEquals("Maps/Farm_Combat"))
+            if (!_Edits.replaceFarm_Combat && asset.AssetNameEquals("Maps/Farm_Combat"))
             {
                 Map map = this.Helper.Content.Load<Map>(RefFile.bveFarm_Combat);
                 _TilesheetCompat.TilesheetRecolours(map);
                 return (T)(object)map;
             }
-            else if (_NewEdit.replaceFarm_Combat && asset.AssetNameEquals("Maps/Farm_Combat"))
+            else if (_Edits.replaceFarm_Combat && asset.AssetNameEquals("Maps/Farm_Combat"))
             {
-                _TilesheetCompat.TilesheetRecolours(_NewEdit.newFarm);
-                return (T)(object)_NewEdit.newFarm;
+                _TilesheetCompat.TilesheetRecolours(_Edits.newFarm);
+                return (T)(object)_Edits.newFarm;
             }
 
             else
@@ -216,6 +179,65 @@ namespace BeyondTheValleyExpansion
         }
 
         // ---------------------------- \\
+
+        private void AddDefaultConfigData()
+        {
+            /* Custom Alchemy Items*/
+            this.Config.CustomAlchemyItems = new Dictionary<int, string>();
+            this.Config.CustomAlchemyItems.Add(1, "reactive");
+        }
+
+        private void ContentPackData()
+        {
+            foreach (IContentPack contentPack in this.Helper.ContentPacks.GetOwned())
+            {
+                // bool for if content.json exists
+                bool contentFileExists = File.Exists(Path.Combine(contentPack.DirectoryPath, "content.json"));
+
+                // read content packs
+                ContentPackModel pack = contentPack.ReadJsonFile<ContentPackModel>("content.json");
+                this.Monitor.Log($"Reading: {contentPack.Manifest.Name} {contentPack.Manifest.Version} by {contentPack.Manifest.Author} from {contentPack.DirectoryPath} (ID: {contentPack.Manifest.UniqueID})", LogLevel.Trace);
+
+                // if content.json does not exists
+                if (!contentFileExists)
+                    this.Monitor.Log($"{contentPack.Manifest.Name}({contentPack.Manifest.Version}) by {contentPack.Manifest.Author} is missing a content.json file. Mod will be ignored", LogLevel.Warn);
+
+                // if content.json exists
+                else if (contentFileExists)
+                    RefMod.contentPacksInstalled += 1;
+
+                foreach (BVEEditModel edit in pack.ReplaceFiles)
+                {
+                    this.Monitor.Log($"Replacing {edit.ReplaceFile} with {edit.FromFile}", LogLevel.Trace);
+
+                    switch(edit.ReplaceFile)
+                    {
+                        // Standard Farm/Farm
+                        case "assets/Maps/FarmMaps/Farm.tbin":
+                            _Edits.newFarm = contentPack.LoadAsset<Map>(edit.FromFile);
+                            _Edits.replaceFarm = true;
+                            continue;
+                        // Farm_Combat/Wilderness Farm
+                        case "assets/Maps/FarmMaps/Farm_Combat.tbin":
+                            _Edits.newFarm_Combat = contentPack.LoadAsset<Map>(edit.FromFile);
+                            _Edits.replaceFarm_Combat = true;
+                            continue;
+                        // Farm_Foraging/Forest Farm
+                        case "assets/Maps/FarmMaps/Farm_Foraging.tbin":
+                            _Edits.newFarm_Foraging = contentPack.LoadAsset<Map>(edit.FromFile);
+                            _Edits.replaceFarm_Foraging = true;
+                            continue;
+
+                        // ReplaceFile path does not exist or is not supported
+                        default:
+                            this.Monitor.Log(
+                                $"[Content Pack:{contentPack.Manifest.Name} {contentPack.Manifest.Version}] Failed to replace \"{edit.ReplaceFile}\" because it does not exist and/or is not supported.", 
+                                LogLevel.Error);
+                            continue;
+                    }
+                }
+            }
+        }
 
         /*********
          ** Helper Methods crap
@@ -411,14 +433,6 @@ namespace BeyondTheValleyExpansion
         private void ConsoleCommands_PurgeSaveDeletedTiles(string command, string[] args)
         {
             _TileActions.PurgeSaveDeletedTiles();
-        }
-
-        /*********
-         ** Get API
-         *********/
-        public override object GetApi()
-        {
-            return new BeyondtheValleyAPI();
         }
     }
 }
