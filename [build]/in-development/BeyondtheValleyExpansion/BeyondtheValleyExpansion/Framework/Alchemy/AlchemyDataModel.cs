@@ -8,6 +8,9 @@ namespace BeyondTheValleyExpansion.Framework.Alchemy
 {
     class AlchemyDataModel
     {
-        public IDictionary<int, string> itemData = new Dictionary<int, string>();
+        public Dictionary<int, string> itemData = new Dictionary<int, string>() {
+            [1] = "e",
+            [2] = "f"
+        };
     }
 }

@@ -39,8 +39,6 @@ namespace BeyondTheValleyExpansion
         private TileActionFramework _TileActions;
         /// <summary> instance of <see cref="TilesheetCompatibility"/> class that contains the tilesheet compatibility check </summary>
         private TilesheetCompatibility _TilesheetCompat;
-        /// <summary> instance of <see cref="WriteAlchemyData"/> class that contains the default</summary>
-        private WriteAlchemyData _WriteData = new WriteAlchemyData();
 
         /*********
         ** BeyondtheValleyAPI
@@ -82,8 +80,7 @@ namespace BeyondTheValleyExpansion
                 "\n\n Best used when you are changing maps mid save (and that map has the Delete Tile Actions)", this.ConsoleCommands_PurgeSaveDeletedTiles);
 
             _AlchemyFramework.AlchemyData = this.Helper.Data.ReadJsonFile<AlchemyDataModel>("Data/AlchemyIDs.json") ?? new AlchemyDataModel();
-
-            _WriteData.DefaultData();
+                  
             this.Helper.Data.WriteJsonFile("Data/AlchemyIDs.json", _AlchemyFramework.AlchemyData);
         }
 

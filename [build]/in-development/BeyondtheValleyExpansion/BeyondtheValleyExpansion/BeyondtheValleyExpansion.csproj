@@ -46,7 +46,6 @@
     <Compile Include="Framework\Actions\SaveDeletedTilesModel.cs" />
     <Compile Include="Framework\Actions\TileActionFramework.cs" />
     <Compile Include="Framework\Alchemy\CustomAlchemyDataModel.cs" />
-    <Compile Include="Framework\Alchemy\WriteAlchemyData.cs" />
     <Compile Include="Framework\Alchemy\AlchemyDataModel.cs" />
     <Compile Include="Framework\BeyondtheValleyAPI.cs" />
     <Compile Include="Framework\ContentPacks\ContentPackFramework.cs" />
