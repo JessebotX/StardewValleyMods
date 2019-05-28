@@ -46,6 +46,7 @@ See [Player's Guide to Downloading and Using Mods](https://stardewvalleywiki.com
 ##### config.json
 - Categories: `Health` and `Stamina`
 - Subcategories: see table below
+
 | **Option** | **Accepted Values** | **Description** | **Default Value** |
 | ---------- | ------------------- | --------------- | ----------------- |
 | Enabled | ```true```, ```false``` | if health or stamina regen (depending on which category you are editing) is enabled or not | ```true``` |
