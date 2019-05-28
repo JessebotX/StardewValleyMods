@@ -43,10 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Config\ConfigOptions\HealthConfig.cs" />
-    <Compile Include="Config\ConfigOptions\RegenDelayConfig.cs" />
-    <Compile Include="Config\ConfigOptions\StaminaConfig.cs" />
-    <Compile Include="Config\ModConfig.cs" />
+    <Compile Include="ModConfig.cs" />
     <Compile Include="ModEntry.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
