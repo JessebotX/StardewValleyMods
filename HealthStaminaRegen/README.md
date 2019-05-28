@@ -9,7 +9,7 @@ Health and stamina regenerates overtime. Highly Configurable.
 - [Install](#install)
 - [Configure](#configure)
   - [Notes](#notes)
-  - [config.json](#config.json)
+  - [config.json](#configjson)
 - [See Also](#see-also)
 
 ## Features
