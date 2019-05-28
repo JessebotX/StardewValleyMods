@@ -47,7 +47,7 @@ See [Player's Guide to Downloading and Using Mods](https://stardewvalleywiki.com
 - Categories: `Health` and `Stamina`
 - Subcategories: see table below
 | **Option** | **Accepted Values** | **Description** | **Default Value** |
-| ---------- | ------------------- | --------------- | ----------- |
+| ---------- | ------------------- | --------------- | ----------------- |
 | Enabled | ```true```, ```false``` | if health or stamina regen (depending on which category you are editing) is enabled or not | ```true``` |
 | HealthPerRegenRate / StaminaPerRegenRate | a number (for stamina, you can use up to 3 decimal places, no decimal places for health ) | The amount of health/stamina you receive per specified RegenRateInSeconds | ```2``` |
 | RegenRateInSeconds | a number (between 1 to 4,294,967,295 (0 may break it, not sure)) | how many seconds in between regenerating | ```1``` |
