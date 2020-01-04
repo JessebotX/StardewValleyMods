@@ -3,6 +3,7 @@
 *.user
 *.userosscache
 *.sln.docstates
+*.swp
 
 # build results
 [Dd]ebug/
@@ -23,3 +24,6 @@ _ReSharper*/
 **/packages/*
 *.nuget.props
 *.nuget.targets
+
+# JetBrains Rider
+.idea
