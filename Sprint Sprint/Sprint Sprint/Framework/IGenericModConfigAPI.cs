@@ -5,7 +5,7 @@ using System;
 
 namespace Sprint_Sprint.Framework
 {
-    interface IGenericModConfigMenuAPI
+    public interface IGenericModConfigAPI
     {
         void RegisterModConfig(IManifest mod, Action revertToDefault, Action saveToFile);
         void RegisterLabel(IManifest mod, string labelName, string labelDesc);

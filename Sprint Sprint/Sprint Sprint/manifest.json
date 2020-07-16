@@ -4,7 +4,7 @@
     "author": "Jessebot",
     "description": "The sequel to Sprint Sprint Sprint. Allows the player to sprint",
     "uniqueid": "Jessebot.SprintSprint",
-    "EntryDll": "SprintSprint.dll",
+    "EntryDll": "Sprint Sprint.dll",
     "MinimumApiVersion": "3.6",
     "UpdateKeys": [ "Nexus:4778" ],
     "Dependencies": [

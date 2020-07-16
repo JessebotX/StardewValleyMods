@@ -23,7 +23,7 @@ namespace Sprint_Sprint
         public override void Entry(IModHelper helper)
         {
             // pass stuff to other classes
-            this.ModIntegration = new Integrations(this.Helper, this.ModManifest, this.Config);
+            this.ModIntegration = new Integrations(this.Helper, this.Monitor, this.ModManifest, this.Config);
 
             // read config
             this.Config = helper.ReadConfig<ModConfig>();
@@ -41,6 +41,7 @@ namespace Sprint_Sprint
         /// <param name="e"> The event arguments </param>
         private void GameLaunched(object sender, GameLaunchedEventArgs e)
         {
+
             this.ModIntegration.GenericModConfigMenuApi();
         }
 

@@ -9,8 +9,8 @@ namespace Sprint_Sprint.Framework.Config
     class StaminaDrainConfig
     {
         /// <summary> Check if stamina draining is on </summary>
-        public bool Enabled { get; set; }
+        public bool Enabled { get; set; } = true;
         /// <summary> How much stamina lost every second </summary>
-        public float StaminaCost { get; set; }
+        public float StaminaCost { get; set; } = 0.25f;
     }
 }
