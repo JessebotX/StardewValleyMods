@@ -10,7 +10,7 @@ namespace Sprint_Sprint.Framework
         /// <summary> Check if user has to hold down <see cref="SprintKey"/> in order to sprint </summary>
         public bool HoldToSprint { get; set; } = true;
         /// <summary> The sprinting speed </summary>
-        public int SprintSpeed { get; set; } = 10;
+        public int SprintSpeed { get; set; } = 8;
         /// <summary> Modify stamina draining settings </summary>
         public StaminaDrainConfig StaminaDrain { get; set; } = new StaminaDrainConfig();
         /// <summary> Disable sprinting when player is too tired </summary>

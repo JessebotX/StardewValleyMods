@@ -14,8 +14,8 @@ namespace Sprint_Sprint
         /// <summary> Access the mod's configuration settings </summary>
         private ModConfig Config;
 
-        /// <summary> Check if the player is sprinting </summary>
-        private bool PlayerSprinting = false;
+        /// <summary> Check if the player is trying to sprint </summary>
+        private bool KeyActivated = false;
 
         #endregion
 
@@ -58,7 +58,6 @@ namespace Sprint_Sprint
                 return;
 
             this.CheckIfHoldDownToSprint();
-            this.CheckIfPlayerCanSprint();
             this.Sprint(e);
         }
 
@@ -84,7 +83,7 @@ namespace Sprint_Sprint
 
         private bool CheckIfPlayerCanSprint()
         {
-            if (this.PlayerSprinting)
+            if (this.KeyActivated)
             {
                 if (this.Config.NoSprintIfTooTired.Enabled)
                 {
@@ -104,9 +103,9 @@ namespace Sprint_Sprint
             if (this.Config.HoldToSprint)
             {
                 if (this.Helper.Input.IsDown(this.Config.SprintKey))
-                    this.PlayerSprinting = true;
+                    this.KeyActivated = true;
                 else
-                    this.PlayerSprinting = false;
+                    this.KeyActivated = false;
             }
         }
 
@@ -116,10 +115,10 @@ namespace Sprint_Sprint
         {
             if (!this.Config.HoldToSprint && e.Button == this.Config.SprintKey)
             {
-                if (this.PlayerSprinting)
-                    this.PlayerSprinting = false;
+                if (this.KeyActivated)
+                    this.KeyActivated = false;
                 else
-                    this.PlayerSprinting = true;
+                    this.KeyActivated = true;
             }
         }
 
