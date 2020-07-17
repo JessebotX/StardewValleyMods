@@ -66,6 +66,10 @@ table, th, td {
     background-color: #5d8a1a;
 }
 
+.unknown {
+    background-color: #71bd00;
+}
+
 .incompatible {
     background-color: #ff0f0f;
 }

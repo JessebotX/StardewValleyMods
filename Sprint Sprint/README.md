@@ -1,5 +1,5 @@
 # Sprint Sprint
-[(download from nexus)](https://www.nexusmods.com/stardewvalley/mods/4778)
+[(download on nexus)](https://www.nexusmods.com/stardewvalley/mods/4778)
 
 ### Contents
 - [Features](#features)
