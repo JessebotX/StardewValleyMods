@@ -43,6 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Framework\Config\NoSprintIfTooTiredConfig.cs" />
     <Compile Include="Framework\Config\StaminaDrainConfig.cs" />
     <Compile Include="Framework\IGenericModConfigAPI.cs" />
     <Compile Include="Framework\Integrations.cs" />
