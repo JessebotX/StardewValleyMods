@@ -77,17 +77,21 @@ namespace Sprint_Sprint
             {
                 Game1.player.addedSpeed = this.Config.SprintSpeed;
                 this.DepleteStamina(e);
-            } else
+            } else if (Game1.player.mount != null)
+                Game1.player.addedSpeed = 5;
+            else
                 Game1.player.addedSpeed = 0;
         }
 
+        /// <summary> Check if the player can sprint or not </summary>
+        /// <returns> Returns if the player can sprint or not </returns>
         private bool CheckIfPlayerCanSprint()
         {
-            if (this.KeyActivated)
+            if (this.KeyActivated && Game1.player.mount == null)
             {
                 if (this.Config.NoSprintIfTooTired.Enabled)
                 {
-                    if (Game1.player.Stamina > this.Config.NoSprintIfTooTired.TiredStamina)
+                    if (Game1.player.Stamina > this.Config.NoSprintIfTooTired.TiredStamina) 
                         return true;
                     else
                         return false;
