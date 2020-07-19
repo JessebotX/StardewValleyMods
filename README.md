@@ -15,19 +15,21 @@ This is the source code for things that are better than you!
 
 **[Bigger Riverlands Farm](https://www.nexusmods.com/stardewvalley/mods/3025)**
 - A bigger and better riverlands farm with some cool features. Replaces Riverlands Farm (works on old and new saves).
-- [Check mod compatibility](https://smapi.io/mods#Bigger_Riverlands_Farm) with latest Stardew Valley/SMAPI version
 
 **[Health and Stamina Regeneration](https://www.nexusmods.com/stardewvalley/mods/3207)**
 - Ever low on health and stamina, you have no food with you, and you still have stuff to do for the day... and mobs to slay... Well now health and stamina regenerates overtime. Highly configurable.
-- [Check mod compatibility](https://smapi.io/mods#Health_and_Stamina_Regeneration) with latest Stardew Valley/SMAPI version
 
 **[Hello SMAPI](https://www.nexusmods.com/stardewvalley/mods/4483)**
 - An ambitious mod that lets you say Hello, Hey or Hi to SMAPI and it will pick one of 60 (configurable, 60 by default) responses. You can add more or remove some responses in the config.json.
-- [Check mod compatibility](https://smapi.io/mods#Hello_SMAPI) with latest Stardew Valley/SMAPI version
 
-**[Sprint Sprint Sprint](https://www.nexusmods.com/stardewvalley/mods/3294)**
+**[Please Fix Error](https://www.nexusmods.com/stardewvalley/mods/6492)**
+- Spams fake errors in your console to make you cry
+
+**[Sprint Sprint](https://www.nexusmods.com/stardewvalley/mods/4778)**
+- Sequel to Sprint Sprint Sprint. Allows the player to sprint. Bug fixes + New configurable features such as toggle to sprint, stamina drain, exhaustion etc.
+
+~~**[Sprint Sprint Sprint](https://www.nexusmods.com/stardewvalley/mods/3294)**~~
 - Hold to sprint, even if you have auto-run enabled. Configurable.
-- [Check mod compatibility](https://smapi.io/mods#Sprint_Sprint_Sprint) with latest Stardew Valley/SMAPI version
 
 #### Content Packs
 **See my [Content Pack Mods Hub](.ContentPackMods) for more**
