@@ -29,7 +29,7 @@ This is the source code for things that are better than you!
 - Sequel to Sprint Sprint Sprint. Allows the player to sprint. Bug fixes + New configurable features such as toggle to sprint, stamina drain, exhaustion etc.
 
 ~~**[Sprint Sprint Sprint](https://www.nexusmods.com/stardewvalley/mods/3294)**~~
-- Hold to sprint, even if you have auto-run enabled. Configurable.
+- ~~Hold to sprint, even if you have auto-run enabled. Configurable.~~
 
 #### Content Packs
 **See my [Content Pack Mods Hub](.ContentPackMods) for more**

@@ -60,12 +60,14 @@ namespace Sprint_Sprint.Framework
         private void GeneralModConfigMenuSettings(IGenericModConfigAPI api)
         {
             api.RegisterModConfig(this.ModManifest, () => this.Config = new ModConfig(), () => this.Helper.WriteConfig(this.Config));
-            api.RegisterSimpleOption(this.ModManifest, "Sprint Keybind", "The key to hold in order to sprint",
+            api.RegisterSimpleOption(this.ModManifest, "Sprint Keybind", "The key to hold in order to sprint+",
                 () => this.Config.SprintKey, (SButton val) => this.Config.SprintKey = val);
             api.RegisterSimpleOption(this.ModManifest, "Hold To Sprint", "Hold down the sprint keybind in order to sprint",
                 () => this.Config.HoldToSprint, (bool val) => this.Config.HoldToSprint = val);
             api.RegisterSimpleOption(this.ModManifest, "Sprint Speed", "The sprint speed value. Higher value = higher movement speed. Must be an integer",
                 () => this.Config.SprintSpeed, (int val) => this.Config.SprintSpeed = val);
+            api.RegisterSimpleOption(this.ModManifest, "Default Horse Speed", "The default horse speed. Sprinting is disabled while on a mount. Must be an integer",
+                () => this.Config.HorseSpeed, (int val) => this.Config.HorseSpeed = val);
         }
 
         /// <summary> Configure stamina drain when sprinting. Add to the Generic Mod Config Menu </summary>

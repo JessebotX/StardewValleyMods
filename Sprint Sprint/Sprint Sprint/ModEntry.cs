@@ -78,7 +78,7 @@ namespace Sprint_Sprint
                 Game1.player.addedSpeed = this.Config.SprintSpeed;
                 this.DepleteStamina(e);
             } else if (Game1.player.mount != null)
-                Game1.player.addedSpeed = 5;
+                Game1.player.addedSpeed = this.Config.HorseSpeed;
             else
                 Game1.player.addedSpeed = 0;
         }

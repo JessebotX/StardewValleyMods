@@ -12,6 +12,7 @@ This list is mostly for people who are directly editing the `config.json` file f
 | SprintKey | Button/Keybind | `Left Shift` | The key to hold in order to sprint. See [accepted keybind values here](https://stardewvalleywiki.com/Modding:Player_Guide/Key_Bindings#Available_bindings) |
 | HoldToSprint | Boolean (true/false) | `true` | Hold down or toggle `SprintKey` to sprint |
 | SprintSpeed | Integer | `8` | The player sprinting speed |
+| HorseSpeed | Integer | `5` | The default horse speed, since sprinting is disabled when riding a horse |
 | StaminaDrain.Enabled | Boolean (true/false) | `true` | If player loses stamina when sprinting |
 | StaminaDrain.StaminaCost | Float (number w/decimals) | `1.0` | The amount of stamina that is loss every second when sprinting |
 | NoSprintIfTooTired.Enabled | Boolean (true/false) | `true` | If sprinting should be disabled when you are low on stamina |
