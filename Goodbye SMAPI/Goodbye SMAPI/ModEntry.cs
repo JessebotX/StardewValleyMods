@@ -40,18 +40,16 @@ namespace Goodbye_SMAPI
                 if (this.QuitGameTimer > 0)
                 {
                     this.QuitGameTimer--;
-
-                    if (this.QuitGameTimer <= 0)
-                        Game1.quit = true;
-                    else
-                        this.Monitor.Log($"Shutting down in {this.QuitGameTimer}...", LogLevel.Info);
+                    this.Monitor.Log($"Shutting down in {this.QuitGameTimer}...", LogLevel.Info);
                 }
+                if (this.QuitGameTimer <= 0)
+                    Environment.Exit(0);
             }
         }
 
         private void AddCommands()
         {
-            if (this.Config.CommandInput.Length == 0)
+            if (this.Config.CommandInput.Length != 0)
             {
                 foreach (string cmd in this.Config.CommandInput)
                     this.Helper.ConsoleCommands.Add(cmd, $"Say {cmd.ToLower()} to SMAPI", this.Goodbye);
@@ -68,11 +66,11 @@ namespace Goodbye_SMAPI
         {
             if (!this.QuitGame)
             {
-                this.Monitor.Log(this.Config.Responses[this.RNG.Next(this.Config.Responses.Length)]);
+                this.Monitor.Log(this.Config.Responses[this.RNG.Next(this.Config.Responses.Length)], LogLevel.Info);
                 this.QuitGame = true;
                 this.QuitGameTimer = 5;
             } else
-            this.Monitor.Log("You've already said goodbye", LogLevel.Info);
+                this.Monitor.Log("You've already said goodbye", LogLevel.Info);
         }
 
         #endregion
