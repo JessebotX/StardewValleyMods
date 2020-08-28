@@ -130,6 +130,11 @@ namespace HealthStaminaRegen
                 this.Monitor.Log("1 second has passed", LogLevel.Debug);
         }
 
+        private void HealthRegen()
+        {
+
+        }
+
         private void ConfigHelpCommand(string command, string[] args)
         {
             this.Monitor.Log(
