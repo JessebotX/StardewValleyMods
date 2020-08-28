@@ -10,7 +10,7 @@ namespace HealthStaminaRegen.Config.ConfigOptions
     {
         public bool Enabled { get; set; } = true;
         public float StaminaPerRegenRate { get; set; } = 2f;
-        public uint RegenRateInSeconds { get; set; } = 1;
+        public int RegenRateInSeconds { get; set; } = 1;
         public int SecondsUntilRegenWhenUsedStamina { get; set; } = 3;
         public bool DontCheckConditions { get; set; } = false;
     }

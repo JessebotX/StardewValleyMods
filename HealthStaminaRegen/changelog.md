@@ -1,6 +1,12 @@
 # RELEASE NOTES
 Health & Stamina Regeneration: [(nexus download)](https://www.nexusmods.com/stardewvalley/mods/3207)
 
+## v2.0.1 (August 28, 2020)
+- Integration with [Generic Mod Config Menu](https://www.nexusmods.com/stardewvalley/mods/5098)
+- Added 1 new configuration option (affects both Health and Stamina unless you have one disabled)
+  - `IgnorePause` (default: false) will let you regen health/stamina even if your game is paused (cutscene playing, menu opened etc.)
+- Remove `2.0.0` ALERT message
+
 ## v2.0.0 (May 27, 2019)
 - Config overhaul, many more long-awaited options have been added
   - Includes: Configuring the seconds it takes in between heals and being able to make it work like a hunger mod.

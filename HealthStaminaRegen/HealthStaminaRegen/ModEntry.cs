@@ -1,12 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
-using StardewModdingAPI.Utilities;
 using StardewValley;
 using HealthStaminaRegen.Config;
 
@@ -25,35 +19,62 @@ namespace HealthStaminaRegen
 
         public override void Entry(IModHelper helper)
         {
-            this.Monitor.Log("Note: Since Health & Stamina Regeneration v2.0.0, a config overhaul has been done and your config.json has been reset, " +
-                "if you had custom values set before v2.0.0, you will need to go into the config.json and re add the values again, " +
-                "if you never configured the mod and think that the default values are fine, you can safely ignore this. \n",LogLevel.Alert
-            );
-
             /* Read config */
             this.Config = helper.ReadConfig<ModConfig>();
 
             /* Hook events */
+            helper.Events.GameLoop.GameLaunched += this.GameLaunched;
             helper.Events.GameLoop.UpdateTicked += this.UpdateTicked;
 
             /* Console Commands */
             this.Helper.ConsoleCommands.Add("healthstaminaregen_confighelp", "shows config.json document", this.ConfigHelpCommand);
             this.Helper.ConsoleCommands.Add("healthstaminaregen_debuglogging", "spams your smapi log with debug info used to debug things.\n" +
-                "Note that you have to restart in order to stop the debug info spamming on your console, this command is for when you have found a bug and want to report it (including the parsed log(see https://log.smapi.io))", 
+                "Note that you have to restart in order to stop the debug info spamming on your console, " +
+                "this command is for when you have found a bug and want to report it " +
+                "(including the parsed log(see https://log.smapi.io))", 
                 this.DebugLoggingCommand);
+        }
+
+        private void GameLaunched(object sender, GameLaunchedEventArgs e)
+        {
+            // integration with Generic Mod Config Menu
+            var api = Helper.ModRegistry.GetApi<IGenericModConfigMenuAPI>("spacechase0.GenericModConfigMenu");
+
+            if (api == null)
+            {
+                this.Monitor.Log("Generic Mod Config Menu not installed. No integration needed", LogLevel.Info);
+                return;
+            }
+
+            api.RegisterModConfig(this.ModManifest, () => this.Config = new ModConfig(), () => Helper.WriteConfig(this.Config));
+            this.HealthConfigImplementation(api);
+            this.StaminaConfigImplementation(api);
+
+            api.RegisterSimpleOption(this.ModManifest, "Regen Even If Game Is Paused",
+                "Even if the game is paused (i.e. opening a menu in singleplayer, cutscene playing, etc.),\n this option will allow you to keep regenerating both Health and Stamina (if they're enabled)",
+                () => this.Config.IgnorePause, (bool val) => this.Config.IgnorePause = val);
         }
 
         private void UpdateTicked(object sender, UpdateTickedEventArgs e)
         {
-            if (!Context.IsPlayerFree || Game1.paused)
+            if (!Context.IsWorldReady)
                 return;
 
-            /********
-            ** Health
-            ********/
+            if (!Context.IsPlayerFree && !this.Config.IgnorePause)
+                return;
+
+            this.HealthRegen(e);
+            this.StaminaRegen(e);
+
+            if (e.IsMultipleOf(60) && this.DebugLogging == true)
+                this.Monitor.Log("1 second has passed", LogLevel.Trace);
+        }
+
+        private void HealthRegen(UpdateTickedEventArgs e)
+        {
             if (this.Config.Health.Enabled)
             {
-                if (e.IsMultipleOf(this.Config.Health.RegenRateInSeconds * 60))
+                if (e.IsMultipleOf((uint)this.Config.Health.RegenRateInSeconds * 60))
                 {
                     if (!this.Config.Health.DontCheckConditions)
                     {
@@ -86,13 +107,13 @@ namespace HealthStaminaRegen
                     }
                 }
             }
+        }
 
-            /********
-            ** Stamina
-            *********/
+        private void StaminaRegen(UpdateTickedEventArgs e)
+        {
             if (this.Config.Stamina.Enabled)
             {
-                if (e.IsMultipleOf(this.Config.Stamina.RegenRateInSeconds * 60))
+                if (e.IsMultipleOf((uint)this.Config.Stamina.RegenRateInSeconds * 60))
                 {
                     if (!this.Config.Stamina.DontCheckConditions)
                     {
@@ -125,30 +146,12 @@ namespace HealthStaminaRegen
                     }
                 }
             }
-
-            if (e.IsMultipleOf(60) && this.DebugLogging == true)
-                this.Monitor.Log("1 second has passed", LogLevel.Debug);
-        }
-
-        private void HealthRegen()
-        {
-
         }
 
         private void ConfigHelpCommand(string command, string[] args)
         {
             this.Monitor.Log(
-                "[NOTE: 2.0 breaks old configs] \n\n" +
-                "CONFIG DOCUMENTATION\n" +
-                "-----------------------------\n" +
-                "-> Enabled: default true, if you want to enable/disable either health or stamina regenerating" +
-                "-> HealthPerRegenRate/StaminaPerRegenRate: the amount you regenerate every {RegenRate} seconds. \n" +
-                "-> RegenRateInSeconds: the rate in seconds you regen.\n" +
-                "-> SecondsUntilRegenWhenUsedStamina/SecondsUntilRegenWhenTakenDamage: the regen cooldown when you take damage or used stamina.\n" +
-                "-> DontCheckConditions: default false, if true, makes it so that it ignores SecondsUntilRegen and just keeps regenerating, ignoring max health/stamina " +
-                "(recommended for people who are using the mod to degenerate like a hunger mod)\n" +
-                "-----------------------------\n" +
-                "See https://github.com/JessebotX/StardewMods/tree/master/HealthStaminaRegen#configure for the full config.json documentation\n\n" +
+                "See https://github.com/JessebotX/StardewMods/tree/master/HealthStaminaRegen#configure for the full config.json documentation.\n\n" +
                 "(If you dont see the config.json in the HealthStaminaRegen folder, you have to run the game once with this mod installed for it to generate)",
                 LogLevel.Info
             );
@@ -157,6 +160,42 @@ namespace HealthStaminaRegen
         private void DebugLoggingCommand(string command, string[] args)
         {
             this.DebugLogging = true;
+        }
+
+        private void HealthConfigImplementation(IGenericModConfigMenuAPI api)
+        {
+            api.RegisterSimpleOption(this.ModManifest, "Enable Health Regeneration", "Allows your health to be modified by HealthPerRegenRate",
+                () => this.Config.Health.Enabled, (bool val) => this.Config.Health.Enabled = val);
+            api.RegisterSimpleOption(this.ModManifest, "Health Per Regen Rate", "The amount of health you get every <Regen Rate> amount of seconds. Must not contain any decimal values",
+                () => this.Config.Health.HealthPerRegenRate, (int val) => this.Config.Health.HealthPerRegenRate = val);
+            api.RegisterSimpleOption(this.ModManifest, "Health Regen Rate", "The seconds in between regeneration. Number must be greater than 0 and must not contain decimal values",
+                () => this.Config.Health.RegenRateInSeconds, (int val) => this.Config.Health.RegenRateInSeconds = val);
+            api.RegisterSimpleOption(this.ModManifest, "Seconds Until Health Regen After Taking Damage",
+                "the cooldown for regen to start again after taking damage, set it to 0 if you don't want a regen cooldown",
+                () => this.Config.Health.SecondsUntilRegenWhenTakenDamage, (int val) => this.Config.Health.SecondsUntilRegenWhenTakenDamage = val);
+            api.RegisterSimpleOption(this.ModManifest, "Don't Check Health Regen Conditions",
+                "Keep regenerating regardless if it goes past max health, ignores SecondsUntilRegen... etc. " +
+                "\n(eg. this allows you to be able to create some sort of hunger mod where you have a negative number set for Health Per Regen Rate; " +
+                "therefore forces you to eat or you may die)",
+                () => this.Config.Health.DontCheckConditions, (bool val) => this.Config.Health.DontCheckConditions = val);
+        }
+
+        private void StaminaConfigImplementation(IGenericModConfigMenuAPI api)
+        {
+            api.RegisterSimpleOption(this.ModManifest, "Enable Stamina Regeneration", "Allows your stamina to be modified by StaminaPerRegenRate",
+                () => this.Config.Stamina.Enabled, (bool val) => this.Config.Stamina.Enabled = val);
+            api.RegisterSimpleOption(this.ModManifest, "Stamina Per Regen Rate", "The amount of stamina you get every <Regen Rate> seconds. Decimal values accepted",
+                () => this.Config.Stamina.StaminaPerRegenRate, (float val) => this.Config.Stamina.StaminaPerRegenRate = val);
+            api.RegisterSimpleOption(this.ModManifest, "Stamina Regen Rate", "The seconds in between regeneration. Number must be greater than 0 and must not contain decimal values",
+                () => this.Config.Stamina.RegenRateInSeconds, (int val) => this.Config.Stamina.RegenRateInSeconds = val);
+            api.RegisterSimpleOption(this.ModManifest, "Seconds Until Stamina Regen After Using Stamina",
+                "the cooldown for regen to start again after using stamina, set it to 0 if you don't want a regen cooldown",
+                () => this.Config.Stamina.SecondsUntilRegenWhenUsedStamina, (int val) => this.Config.Stamina.SecondsUntilRegenWhenUsedStamina = val);
+            api.RegisterSimpleOption(this.ModManifest, "Don't Check Stamina Regen Conditions",
+                "Keep regenerating regardless if it goes past max stamina, ignores SecondsUntilRegen... etc. " +
+                "\n(eg. this allows you to be able to create some sort of hunger mod where you have a negative number set for Stamina Per Regen Rate; " +
+                "therefore forces you to eat or you will run out of stamina and get over-exertion)",
+                () => this.Config.Stamina.DontCheckConditions, (bool val) => this.Config.Stamina.DontCheckConditions = val);
         }
     }
 }
