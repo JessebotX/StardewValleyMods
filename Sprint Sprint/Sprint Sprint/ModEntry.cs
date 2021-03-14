@@ -16,6 +16,10 @@ namespace Sprint_Sprint
 
         /// <summary> Check if the player is trying to sprint </summary>
         private bool KeyActivated = false;
+        private bool SpeedAdded = false;
+        private bool SpeedReplaced = false;
+        private int AddedSpeedBeforeMount = 0;
+        private int LastCheckSpeed = 0;
 
         #endregion
 
@@ -75,13 +79,37 @@ namespace Sprint_Sprint
         {
             if (this.CheckIfPlayerCanSprint())
             {
-                Game1.player.addedSpeed = this.Config.SprintSpeed;
-                this.DepleteStamina(e);
+                if (!this.SpeedAdded) 
+                {
+                    Game1.player.addedSpeed += this.Config.SprintSpeed;  ///Add speeds on top of other buffs instead replacing it, just like the Buff class does.   
+                    this.SpeedAdded = true; ///Remember speed has been added already.
+                }
+                this.DepleteStamina(e);  ///player.position.X and player.position.Y could also be used here to avoid consuming stamine if the character isn't moving, like running against a wall. 
             }
-            else if (Game1.player.mount != null)
-                Game1.player.addedSpeed = this.Config.HorseSpeed;
-            else
-                Game1.player.addedSpeed = 0;
+            else if (Game1.player.mount != null) 
+            {
+                if (!this.SpeedReplaced) 
+                {
+                    this.AddedSpeedBeforeMount = Game1.player.addedSpeed;  ///Stores speed from other buffs before replacing it. 
+                    this.SpeedReplaced = true;
+                } else if (Game1.player.addedSpeed != this.LastCheckSpeed) ///Gotta make sure other buffs didn't change while riding the horse and update it otherwise.
+                    this.AddedSpeedBeforeMount -= this.LastCheckSpeed - Game1.player.addedSpeed ///Remove the difference.
+                this.LastCheckSpeed = Game1.player.addedSpeed;  ///Keep track of last speed
+                Game1.player.addedSpeed = this.Config.HorseSpeed;  ///And finally overrides the addedSpeed with the Config setting. No sprint nor buffs on horse, just the horse's own speed! 
+            }
+            else 
+            {
+                if (this.SpeedAdded) ///Remove the added speed if it was added.  
+                { 
+                    Game1.player.addedSpeed -= this.Config.SprintSpeed;
+                    this.SpeedAdded = false;
+                }
+                if (this.SpeedReplaced)  ///Reverts the speed added if it was replaced. 
+                {
+                    Game1.player.addedSpeed = this.AddedSpeedBeforeMount;
+                    this.SpeedReplaced = false;
+                }
+            }
         }
 
         /// <summary> Check if the player can sprint or not </summary>
