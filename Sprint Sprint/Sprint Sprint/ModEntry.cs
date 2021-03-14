@@ -91,7 +91,7 @@ namespace Sprint_Sprint
                 {
                     this.AddedSpeedBeforeMount = Game1.player.addedSpeed;  ///Stores speed from other buffs before replacing it. 
                     this.SpeedReplaced = true;
-                } else if (Game1.player.addedSpeed != this.Config.HorseSpeed) ///Gotta make sure other buffs didn't change while riding the horse and update it otherwise.
+                } else if (Game1.player.addedSpeed != this.Config.HorseSpeed) ///Gotta make sure other buffs didn't change addedSpeed while riding the horse, and update AddedSpeedBeforeMount otherwise
                     this.AddedSpeedBeforeMount -= this.Config.HorseSpeed - Game1.player.addedSpeed ///Remove the difference.
                 Game1.player.addedSpeed = this.Config.HorseSpeed;  ///And finally overrides the addedSpeed with the Config setting. No sprint nor buffs on horse, just the horse's own speed! 
             }
