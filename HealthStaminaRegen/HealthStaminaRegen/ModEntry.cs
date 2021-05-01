@@ -3,6 +3,7 @@ using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
 using HealthStaminaRegen.Config;
+using StardewModdingAPI.Utilities;
 
 namespace HealthStaminaRegen
 {
@@ -14,8 +15,8 @@ namespace HealthStaminaRegen
         private int SecondsUntilHealthRegen = 0;
         private int SecondsUntilStaminaRegen = 0;
 
-        private int LastHealth;
-        private float LastStamina;
+        private PerScreen<int> LastHealth = new PerScreen<int>();
+        private PerScreen<float> LastStamina = new PerScreen<float>();
 
         public override void Entry(IModHelper helper)
         {
@@ -79,7 +80,7 @@ namespace HealthStaminaRegen
                     if (!this.Config.Health.DontCheckConditions)
                     {
                         // if player took damage
-                        if (Game1.player.health < this.LastHealth)
+                        if (Game1.player.health < this.LastHealth.Value)
                             this.SecondsUntilHealthRegen = this.Config.Health.SecondsUntilRegenWhenTakenDamage;
                         //timer
                         else if (this.SecondsUntilHealthRegen > 0)
@@ -89,7 +90,7 @@ namespace HealthStaminaRegen
                             if (Game1.player.health < Game1.player.maxHealth)
                                 Game1.player.health = Math.Min(Game1.player.maxHealth, Game1.player.health + this.Config.Health.HealthPerRegenRate);
 
-                        this.LastHealth = Game1.player.health;
+                        this.LastHealth.Value = Game1.player.health;
 
                         if (this.DebugLogging)
                         {
@@ -118,7 +119,7 @@ namespace HealthStaminaRegen
                     if (!this.Config.Stamina.DontCheckConditions)
                     {
                         // if player used stamina
-                        if (Game1.player.Stamina < this.LastStamina)
+                        if (Game1.player.Stamina < this.LastStamina.Value)
                             this.SecondsUntilStaminaRegen = this.Config.Stamina.SecondsUntilRegenWhenUsedStamina;
                         //timer
                         else if (this.SecondsUntilStaminaRegen > 0)
@@ -128,7 +129,7 @@ namespace HealthStaminaRegen
                             if (Game1.player.Stamina < Game1.player.MaxStamina)
                                 Game1.player.Stamina = Math.Min(Game1.player.MaxStamina, Game1.player.Stamina + this.Config.Stamina.StaminaPerRegenRate);
 
-                        this.LastStamina = Game1.player.Stamina;
+                        this.LastStamina.Value = Game1.player.Stamina;
 
                         if (this.DebugLogging)
                         {
