@@ -33,6 +33,13 @@ This is a monorepo of all my open source Stardew Valley mods.
 ## Content Packs
 See [.ContentPackMods](.ContentPackMods)
 
+# Installation
+## Nexus Mods (Recommended)
+All (or most) of my mods are available to download on [Nexus Mods](https://www.nexusmods.com/stardewvalley). Each mod page has its own installation instructions. Downloading from there also supports me as each unique mod download gives the author donation points (unless the author has disabled receiving donation points).
+
+## GitHub
+You can download my mods here on github as well. Every mod folder in this repo should have a raw `<MOD_NAME>.zip` file for you to download (by simply clicking on the file and then `View Raw`). Additionally, you may find some mod releases on this GitHub repo's releases page.
+
 # Permissions
 Except where otherwise noted, this is under the [BSD Zero Clause License](./LICENSE)
 - Free to do whatever you want with it; with or without attribution.
